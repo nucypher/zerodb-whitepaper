@@ -6,6 +6,7 @@
 % \usepackage{xspace}
 \definecolor{darkgreen}{rgb}{0.00,0.50,0.25}
 \definecolor{darkblue}{rgb}{0.00,0.00,0.67}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
 \usepackage[breaklinks,pdftitle={ZeroDB whitepaper}, pdfauthor={Michael Egorov},colorlinks,urlcolor=blue,citecolor=darkgreen,linkcolor=darkblue]{hyperref}
 \usepackage[usenames]{color}
 \graphicspath{{pdf/}}
@@ -51,11 +52,28 @@ Buckets which the index consists of are encrypted before being uploaded to the s
 		\subfloat{\label{fig:communication}\includegraphics[width=0.47\columnwidth]{protocol.pdf}}
 	\end{center}
 	\caption[Calibration with the condensation temperature]{
-		\subref{fig:tree-traversal} Tree traversal
-		\subref{fig:communication} Example of network communication
+        \subref{fig:tree-traversal} Encrypted index traversal example (simple keyword search).
+		\subref{fig:communication} Sequence of client requests for traversal of the example index.
 	}
 	\label{fig:btree-protocol}
 \end{figure}
+
+In ZeroDB, indexes are structured as B-Trees~\figref{fig:tree-traversal}.
+A B-Tree consists of buckets, each of which can be either a root, branch, or leaf node.
+The leaf nodes of a tree point to the actual objects being stored.
+Thus, searching the database is a simple tree traversal.
+
+In order to make the database end-to-end encrypted yet still capable of performing queries, the client encrypts the buckets (at the time of creation or modification).
+The server, which stores the buckets, never knows the encryption key used.
+The objects referenced by the leaf nodes of the B-Tree indexes are also encrypted client-side.
+As a result, the server does not know how individual objects are organized within the B-Tree or whether they even belong to an index at all.
+Since ZeroDB is encryption agnostic, probabilistic encryption can be used so that the server cannot compare objects, not even for equality.
+
+When a client performs a query, it asks the server to return buckets of the tree as it traverses the index remotely~\figref{fig:communication}.
+Buckets can be cached client-side so that subsequent queries do not make unnecessary network calls.
+
+The server cares about data replication, multi-version concurrency, object locking, user authentication, quotas etc.
+The client performs encryption/decryption and query logic.
 
 \subsection{Range queries}
 
