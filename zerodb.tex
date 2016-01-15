@@ -77,6 +77,17 @@ The client performs encryption/decryption and query logic.
 
 \subsection{Range queries}
 
+When data are organized in B-Trees, doing range queries is pretty easy.
+Let's take an example of having records \emph{Record} with an integer property \emph{weight}.
+Data pointers to \emph{Record} objects are placed in a B-Tree in sorted by \emph{weight}.
+
+Two different types of range queries could be performed.
+One is when we want a small subset of data in the beginning of the range (limit query).
+In this case, we find a pointer to the beginning of the range~\figref{fig:range-query-iter}, then incrementally fetch next buckets if the range occupies more than one, then bulk-fetch objects themselves by their pointers.
+
+The other case is when we want to get \emph{all} objects in the range (select *).
+We download subsection of B-Tree matching the range query level-by-level in logarithmic number of steps in this case~\figref{fig:range-query-star}.
+
 \subsection{Complex queries (multi-keyword search, multiple conditions)}
 
 \subsection{Joins}
