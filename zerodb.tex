@@ -51,7 +51,7 @@ Buckets which the index consists of are encrypted before being uploaded to the s
         \qquad
 		\subfloat{\label{fig:communication}\includegraphics[width=0.47\columnwidth]{protocol.pdf}}
 	\end{center}
-	\caption[Calibration with the condensation temperature]{
+    \caption[Search protocol using an example of keyword search]{
         \subref{fig:tree-traversal} Encrypted index traversal example (simple keyword search).
 		\subref{fig:communication} Sequence of client requests for traversal of the example index.
 	}
@@ -76,6 +76,16 @@ The server cares about data replication, multi-version concurrency, object locki
 The client performs encryption/decryption and query logic.
 
 \subsection{Range queries}
+
+\begin{figure}
+	\begin{center}
+        \subfloat{\label{fig:range-query-iter}\includegraphics[width=0.8\columnwidth]{range-query-iter.pdf}}
+	\end{center}
+	\caption[Range queries]{
+        \subref{fig:range-query-iter} Range query searching for objects with a property $16 \le weight \le 27$ (takes 4 requests w/o cache).
+	}
+	\label{fig:range-query}
+\end{figure}
 
 When data are organized in B-Trees, doing range queries is pretty easy.
 Let's take an example of having records \emph{Record} with an integer property \emph{weight}.
