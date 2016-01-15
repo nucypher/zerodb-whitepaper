@@ -1,13 +1,14 @@
 \documentclass[notitlepage]{revtex4-1}
 
 \usepackage{graphicx}
-\usepackage{subfigure}
+\usepackage[margin=5pt]{subfig}
 \usepackage[usenames]{color}
 % \usepackage{xspace}
 \definecolor{darkgreen}{rgb}{0.00,0.50,0.25}
 \definecolor{darkblue}{rgb}{0.00,0.00,0.67}
 \usepackage[breaklinks,pdftitle={ZeroDB whitepaper}, pdfauthor={Michael Egorov},colorlinks,urlcolor=blue,citecolor=darkgreen,linkcolor=darkblue]{hyperref}
 \usepackage[usenames]{color}
+\graphicspath{{pdf/}}
 
 \begin{document}
 
@@ -43,6 +44,18 @@ An encrypted index is stored on the server as a B-Tree, and the client traverses
 Buckets which the index consists of are encrypted before being uploaded to the server and decrypted only on the side of the client.
 
 \subsection{Keyword search}
+\begin{figure}
+	\begin{center}
+        \subfloat{\label{fig:tree-traversal}\includegraphics[width=0.47\columnwidth]{btree-traverse.pdf}}
+        \qquad
+		\subfloat{\label{fig:communication}\includegraphics[width=0.47\columnwidth]{protocol.pdf}}
+	\end{center}
+	\caption[Calibration with the condensation temperature]{
+		\subref{fig:tree-traversal} Tree traversal
+		\subref{fig:communication} Example of network communication
+	}
+	\label{fig:btree-protocol}
+\end{figure}
 
 \subsection{Range queries}
 
