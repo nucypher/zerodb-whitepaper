@@ -79,10 +79,13 @@ The client performs encryption/decryption and query logic.
 
 \begin{figure}
 	\begin{center}
-        \subfloat{\label{fig:range-query-iter}\includegraphics[width=0.8\columnwidth]{range-query-iter.pdf}}
+        \subfloat{\label{fig:range-query-iter}\includegraphics[width=0.47\columnwidth]{range-query-iter.pdf}}
+        \qquad
+        \subfloat{\label{fig:range-query-star}\includegraphics[width=0.47\columnwidth]{range-query-star.pdf}}
 	\end{center}
 	\caption[Range queries]{
-        \subref{fig:range-query-iter} Range query searching for objects with a property $16 \le weight \le 27$ (takes 4 requests w/o cache).
+        \subref{fig:range-query-iter} Range query searching for objects with a property $16 \le weight$, $limit=4$ (takes 4 requests w/o cache).
+        \subref{fig:range-query-star} Range query which fetches \emph{all} objects  with $16 \le weight \le 27$ (takes 3 requests w/o cache).
 	}
 	\label{fig:range-query}
 \end{figure}
@@ -97,6 +100,10 @@ In this case, we find a pointer to the beginning of the range~\figref{fig:range-
 
 The other case is when we want to get \emph{all} objects in the range (select *).
 We download subsection of B-Tree matching the range query level-by-level in logarithmic number of steps in this case~\figref{fig:range-query-star}.
+To do that, we start with the root bucket.
+Then, we download all the child buckets which match the range at once.
+Then all children of those buckets, etc until we get to the leaf nodes.
+After that we (optionally) bulk-fetch all the objects which match the range query at once.
 
 \subsection{Complex queries (multi-keyword search, multiple conditions)}
 
