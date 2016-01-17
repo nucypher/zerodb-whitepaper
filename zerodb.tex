@@ -44,14 +44,14 @@ The client interacts with the server during the execution of a query over a seri
 An encrypted index is stored on the server as a B-Tree, and the client traverses this index remotely to retrieve the necessary encrypted records.
 Buckets which the index consists of are encrypted before being uploaded to the server and decrypted only on the side of the client.
 
-\subsection{Keyword search}
+\subsection{Equality query (using example of keyword search)}
 \begin{figure}
 	\begin{center}
         \subfloat[Encrypted index traversal example (simple keyword search)]{\label{fig:tree-traversal}\includegraphics[width=0.47\columnwidth]{btree-traverse.pdf}}
         \qquad
         \subfloat[Sequence of client requests for traversal of the example index]{\label{fig:communication}\includegraphics[width=0.47\columnwidth]{protocol.pdf}}
 	\end{center}
-    \caption{Search protocol using an example of keyword search}
+    \caption{Search protocol for equality query using an example of keyword search}
 	\label{fig:btree-protocol}
 \end{figure}
 
@@ -96,18 +96,54 @@ The other case is when we want to get \emph{all} objects in the range (select *)
 We download subsection of B-Tree matching the range query level-by-level in logarithmic number of steps in this case~\figref{fig:range-query-star}.
 To do that, we start with the root bucket.
 Then, we download all the child buckets which match the range at once.
-Then all children of those buckets, etc until we get to the leaf nodes.
+Then all children of those buckets, etc. until we get to the leaf nodes.
 After that we (optionally) bulk-fetch all the objects which match the range query at once.
 
-\subsection{Complex queries (multi-keyword search, multiple conditions)}
+\subsection{Complex queries (multi-keyword search, multiple conditions) and joins}
 
-\subsection{Joins}
+% 1) multiple "equal" conditions:
+%    var1 == a and var2 == b order by var3
+%    a) var1: BTree(var1 -> TreeSet(ids))
+%       var2: BTree(var2 -> TreeSet(ids))
+%       Take shorter treeset (say, for var1), fetch all ids
+%       Traverse treeset for var2 in parallel to find all the ids from 1st treeset
+%       Find order by traversing reverse index var3: BTree(id -> var3)
+%
+%       Example: any typical highly selective query
+%       Pros: easy to reorder afterwards
+%       Cons: very strong hint about how large the dataset is (unless reading more data than actually need), bad performance if words have ~same weights
+
+%   b)  pre-order by var3
+%       Indexes are, in fact, on composite keys (var1, var3) and (var2, var3)
+%       respectively:
+%       var1: BTree(var1 -> BTree(var3 -> TreeSet(ids)))
+%       var2: BTree((var2 -> BTree(var3 -> TreeSet(ids)))
+%       Now, for a query (var1=a and var2=b), we find pointers and lengths
+%       of datasets for var=1 and var=2 respectively.
+%       Now we can lazily (iteratively) fetch ids from one set, one-by-one
+%       (already ordered by var3) and search if ids for the same var3 and var2
+%       contain the same id as we've currently fetched.
+
+%       All the considerations above are also valid for joins
+
+%       ** All "btrees of treesets" or "btrees(var1) of btrees(var2)" can be
+%       replaced with indexes on tuples (var1, var2) to have the same total
+%       index height for all values of var2 (which could have performance and
+%       security benefits)
 
 \section{Sharing data}
 
 \section{Security analysis}
 
 \section{Performance}
+
+\subsection{Prefetching all the B-Tree (for small trees) in logarithmic number of steps}
+
+\subsection{Parallel tree traversal}
+
+\subsection{Unfolding trees with subtrees into one tree}
+
+\subsection{Benchmarks}
 
 \bibliography{zerodb}
 
