@@ -47,14 +47,11 @@ Buckets which the index consists of are encrypted before being uploaded to the s
 \subsection{Keyword search}
 \begin{figure}
 	\begin{center}
-        \subfloat{\label{fig:tree-traversal}\includegraphics[width=0.47\columnwidth]{btree-traverse.pdf}}
+        \subfloat[Encrypted index traversal example (simple keyword search)]{\label{fig:tree-traversal}\includegraphics[width=0.47\columnwidth]{btree-traverse.pdf}}
         \qquad
-		\subfloat{\label{fig:communication}\includegraphics[width=0.47\columnwidth]{protocol.pdf}}
+        \subfloat[Sequence of client requests for traversal of the example index]{\label{fig:communication}\includegraphics[width=0.47\columnwidth]{protocol.pdf}}
 	\end{center}
-    \caption[Search protocol using an example of keyword search]{
-        \subref{fig:tree-traversal} Encrypted index traversal example (simple keyword search).
-		\subref{fig:communication} Sequence of client requests for traversal of the example index.
-	}
+    \caption{Search protocol using an example of keyword search}
 	\label{fig:btree-protocol}
 \end{figure}
 
@@ -79,14 +76,11 @@ The client performs encryption/decryption and query logic.
 
 \begin{figure}
 	\begin{center}
-        \subfloat{\label{fig:range-query-iter}\includegraphics[width=0.47\columnwidth]{range-query-iter.pdf}}
+        \subfloat[Query searching for objects with a property $16 \le weight$, $limit=4$ (takes 4 requests w/o cache)]{\label{fig:range-query-iter}\includegraphics[width=0.47\columnwidth]{range-query-iter.pdf}}
         \qquad
-        \subfloat{\label{fig:range-query-star}\includegraphics[width=0.47\columnwidth]{range-query-star.pdf}}
+        \subfloat[Query which fetches \emph{all} objects  with $16 \le weight \le 27$ (takes 3 requests w/o cache)]{\label{fig:range-query-star}\includegraphics[width=0.47\columnwidth]{range-query-star.pdf}}
 	\end{center}
-	\caption[Range queries]{
-        \subref{fig:range-query-iter} Range query searching for objects with a property $16 \le weight$, $limit=4$ (takes 4 requests w/o cache).
-        \subref{fig:range-query-star} Range query which fetches \emph{all} objects  with $16 \le weight \le 27$ (takes 3 requests w/o cache).
-	}
+	\caption{Range queries}
 	\label{fig:range-query}
 \end{figure}
 
