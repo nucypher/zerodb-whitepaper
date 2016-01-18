@@ -1,6 +1,7 @@
 \documentclass[notitlepage]{revtex4-1}
 
 \usepackage{graphicx}
+\usepackage{amsmath}
 \usepackage[margin=5pt]{subfig}
 \usepackage[usenames]{color}
 % \usepackage{xspace}
@@ -101,10 +102,15 @@ After that we (optionally) bulk-fetch all the objects which match the range quer
 This is done in a way similar to prefetching all trees (Section~\ref{sec:bulk-fetching}).
 Selecting all objects in a range opens up approximate number of objects in this range to an observer at the server (the range and field names remain secret).
 
-\subsection{Complex queries (multi-keyword search, multiple conditions) and joins}
+\subsection{Complex queries (multi-keyword search, multiple conditions)}
 
-% 1) multiple "equal" conditions:
-%    var1 == a and var2 == b order by var3
+So far we described simple queries.
+But queries may contain multiple conditions at the same time.
+Depending on number of objects matching each condition and desired security properties we can use different approaches.
+Making a query with ``or'' condition requires simply zip-joining two sorted datasets, so we don't consider that to be problematic.
+Let's consider a query where we select objects matching condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$.
+
+\subsubsection{Prefetch approach}
 %    a) var1: BTree(var1 -> TreeSet(ids))
 %       var2: BTree(var2 -> TreeSet(ids))
 %       Take shorter treeset (say, for var1), fetch all ids
@@ -114,6 +120,33 @@ Selecting all objects in a range opens up approximate number of objects in this 
 %       Example: any typical highly selective query
 %       Pros: easy to reorder afterwards
 %       Cons: very strong hint about how large the dataset is (unless reading more data than actually need), bad performance if words have ~same weights
+
+In case number of items with $v_1=a$ is small, it could be worthwhile to download all the subset of object IDs matching this condition.
+It could practically happen in a multi-keyword search when one word is rare.
+
+We can use following indexes for this kind of query:
+\begin{align*}
+    & \mbox{BTree}(v_1 \rightarrow \mbox{TreeSet}(ids)),\\
+    & \mbox{BTree}(v_2 \rightarrow \mbox{TreeSet}(ids)),\\
+    & \mbox{BTree}(id \rightarrow v_3).
+\end{align*}
+
+Firstly, we estimate which condition has the smallest number of matching elements.
+We can do so by fetching ``contours'' of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine height of the tree and approximate distance between smallest and largest elements, knowing average size of a bucket, and it ``costs'' $H$ requests between client and server.
+
+We prefetch a TreeSet for the most ``lightweight'' condition (Sec.~\ref{sec:bulk-fetching}).
+Then we bulk-search~(Sec.~\ref{sec:parallel-traversal}) these IDs in the larger TreeSet (and if we don't find an ID in the leaf node, we drop it).
+
+After that, we want to sort the small subset of IDs we've got in order of $v_3$.
+We do parallel traversal of the third B-Tree and find which value of $v_3$ corresponds to each ID.
+
+This approach opens up number of elements matching condition $v_1=a$ to the server while this condition remains unknown.
+
+\subsubsection{Preorder approach}
+
+\subsubsection{Doing set intersection server-side}
+
+
 
 %   b)  pre-order by var3
 %       Indexes are, in fact, on composite keys (var1, var3) and (var2, var3)
@@ -136,6 +169,10 @@ Selecting all objects in a range opens up approximate number of objects in this 
 %       replaced with indexes on tuples (var1, var2) to have the same total
 %       index height for all values of var2 (which could have performance and
 %       security benefits)
+
+%   "Proper" joins are a little unclear. We don't want to open deterministically encrypted *values* to the server
+%   b/c it opens up too much information for statistical analysis.
+%   We can use default ZODB approach of events/subscribers when related objects are modified instead
 
 \subsection{Optimizations specific for remote client}
 
@@ -170,6 +207,7 @@ Therefore, this technique should be used as rarely as possible, combined with re
 The latter would enable the observer to not learn bucket IDs.
 
 \subsubsection{Parallel tree traversal}
+\label{sec:parallel-traversal}
 
 Often queries involve several values of the same field (or different fields).
 For example, indexing a new document containing $100$ words could be an expensive operation since it would involve $100\,H$ requests to the server, making the performance defined by client-server latency very poor.
