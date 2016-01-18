@@ -77,6 +77,17 @@ The latter would enable the observer to not learn bucket IDs.
 
 \subsection{Parallel tree traversal}
 
+Often queries involve several values of the same field (or different fields).
+For example, indexing a new document containing $100$ words could be an expensive operation since it would involve $100\,H$ requests to the server, making the performance defined by client-server latency very poor.
+
+In order to fix that, we traverse B-Tree in such cases in parallel~\figref{fig:parallel-traversal}.
+We first fetch the root of the tree.
+Then, we fetch only those child-buckets of the root which are relevant to the values relevant to our query.
+Then, we fetch only relevant children of those, etc.
+This way, in $H$ steps we do tree traversal for all the necessary values.
+
+When we do parallel traversal, a curious observer would only be able to see access patterns but not being able to distinguish access patterns belonging to each of values individually.
+
 \subsection{Equality query (using example of keyword search)}
 \begin{figure}
 	\begin{center}
