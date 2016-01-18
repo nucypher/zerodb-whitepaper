@@ -44,50 +44,6 @@ The client interacts with the server during the execution of a query over a seri
 An encrypted index is stored on the server as a B-Tree, and the client traverses this index remotely to retrieve the necessary encrypted records.
 Buckets which the index consists of are encrypted before being uploaded to the server and decrypted only on the side of the client.
 
-\subsection{Optimizations specific for remote client}
-
-In most cases, all the query logics in ZeroDB happens client-side, e.g. client and storage are separated by a network channel with high latency.
-Therefore, we use a couple of primitives specific for this architecture.
-
-\begin{figure}
-	\begin{center}
-        \subfloat[When a tree (or sub-tree) is small, it can be fully pre-fetched to the client]{\label{fig:fetch-tree}\includegraphics[width=0.47\columnwidth]{fetch-tree.pdf}}
-        \qquad
-        \subfloat[When multiple branches of the tree needs reading/updating, tree traversal can be done in parallel]{\label{fig:parallel-traversal}\includegraphics[width=0.47\columnwidth]{parallel-traversal.pdf}}
-	\end{center}
-    \caption{ZeroDB-specific optimizations of working with B-Trees. Allows to pre-fetch a tree or find multiple values in number of steps equal to the tree height}
-	\label{fig:tree-traversal-optimizations}
-\end{figure}
-
-\subsection{Bulk-fetching small (sub)trees}
-
-When a tree (or sub-tree) is small enough, it could be more performant to fetch it all to the client.
-But we need to do that not bucket-by-bucket, as one would do with an index stored on a local hard drive, but in logarithmic number of steps.
-
-In order to do that, we fetch the root first~\figref{fig:fetch-tree}.
-Client unpacks the root bucket and fetches all its children in one query.
-Then it unpacks all the child nodes, figures out IDs of their children.
-This process continues until all the B-Tree is fetch.
-As one can clearly see, number of queries to perform such fetching is equal to height of the B-Tree $H$, proportional to logarithm of its size $\log{S_{\mbox{ix}}}$.
-
-When we fetch a tree, we implicitly show number of objects there $S_{\mbox{ix}}$ to a curious observer on the server.
-Based on the size of the read data, the observer would be able to obtain number close to $S_{\mbox{ix}}$ and associate it with bucket IDs we've just read.
-Therefore, this technique should be used as rarely as possible, combined with reading other data at the same time or with oblivious RAMs~\cite{path-oram,burst-oram,oram-multicloud,ods-wang-2014}.
-The latter would enable the observer to not learn bucket IDs.
-
-\subsection{Parallel tree traversal}
-
-Often queries involve several values of the same field (or different fields).
-For example, indexing a new document containing $100$ words could be an expensive operation since it would involve $100\,H$ requests to the server, making the performance defined by client-server latency very poor.
-
-In order to fix that, we traverse B-Tree in such cases in parallel~\figref{fig:parallel-traversal}.
-We first fetch the root of the tree.
-Then, we fetch only those child-buckets of the root which are relevant to the values relevant to our query.
-Then, we fetch only relevant children of those, etc.
-This way, in $H$ steps we do tree traversal for all the necessary values.
-
-When we do parallel traversal, a curious observer would only be able to see access patterns but not being able to distinguish access patterns belonging to each of values individually.
-
 \subsection{Equality query (using example of keyword search)}
 \begin{figure}
 	\begin{center}
@@ -142,6 +98,8 @@ To do that, we start with the root bucket.
 Then, we download all the child buckets which match the range at once.
 Then all children of those buckets, etc. until we get to the leaf nodes.
 After that we (optionally) bulk-fetch all the objects which match the range query at once.
+This is done in a way similar to prefetching all trees (Section~\ref{sec:bulk-fetching}).
+Selecting all objects in a range opens up approximate number of objects in this range to an observer at the server (the range and field names remain secret).
 
 \subsection{Complex queries (multi-keyword search, multiple conditions) and joins}
 
@@ -179,15 +137,56 @@ After that we (optionally) bulk-fetch all the objects which match the range quer
 %       index height for all values of var2 (which could have performance and
 %       security benefits)
 
+\subsection{Optimizations specific for remote client}
+
+In most cases, all the query logics in ZeroDB happens client-side, e.g. client and storage are separated by a network channel with high latency.
+Therefore, we use a couple of primitives specific for this architecture.
+
+\begin{figure}
+	\begin{center}
+        \subfloat[When a tree (or sub-tree) is small, it can be fully pre-fetched to the client]{\label{fig:fetch-tree}\includegraphics[width=0.47\columnwidth]{fetch-tree.pdf}}
+        \qquad
+        \subfloat[When multiple branches of the tree needs reading/updating, tree traversal can be done in parallel]{\label{fig:parallel-traversal}\includegraphics[width=0.47\columnwidth]{parallel-traversal.pdf}}
+	\end{center}
+    \caption{ZeroDB-specific optimizations of working with B-Trees. Allows to pre-fetch a tree or find multiple values in number of steps equal to the tree height}
+	\label{fig:tree-traversal-optimizations}
+\end{figure}
+
+\subsubsection{Bulk-fetching small (sub)trees}
+\label{sec:bulk-fetching}
+
+When a tree (or sub-tree) is small enough, it could be more performant to fetch it all to the client.
+But we need to do that not bucket-by-bucket, as one would do with an index stored on a local hard drive, but in logarithmic number of steps.
+
+In order to do that, we fetch the root first~\figref{fig:fetch-tree}.
+Client unpacks the root bucket and fetches all its children in one query.
+Then it unpacks all the child nodes, figures out IDs of their children.
+This process continues until all the B-Tree is fetch.
+As one can clearly see, number of queries to perform such fetching is equal to height of the B-Tree $H$, proportional to logarithm of its size $\log{S_{\mbox{ix}}}$.
+
+When we fetch a tree, we implicitly show number of objects there $S_{\mbox{ix}}$ to a curious observer on the server.
+Based on the size of the read data, the observer would be able to obtain number close to $S_{\mbox{ix}}$ and associate it with bucket IDs we've just read.
+Therefore, this technique should be used as rarely as possible, combined with reading other data at the same time or with oblivious RAMs~\cite{path-oram,burst-oram,oram-multicloud,ods-wang-2014}.
+The latter would enable the observer to not learn bucket IDs.
+
+\subsubsection{Parallel tree traversal}
+
+Often queries involve several values of the same field (or different fields).
+For example, indexing a new document containing $100$ words could be an expensive operation since it would involve $100\,H$ requests to the server, making the performance defined by client-server latency very poor.
+
+In order to fix that, we traverse B-Tree in such cases in parallel~\figref{fig:parallel-traversal}.
+We first fetch the root of the tree.
+Then, we fetch only those child-buckets of the root which are relevant to the values relevant to our query.
+Then, we fetch only relevant children of those, etc.
+This way, in $H$ steps we do tree traversal for all the necessary values.
+
+When we do parallel traversal, a curious observer would only be able to see access patterns but not being able to distinguish access patterns belonging to each of values individually.
+
 \section{Sharing data}
 
 \section{Security analysis}
 
 \section{Performance}
-
-\subsection{Prefetching all the B-Tree (for small trees) in logarithmic number of steps}
-
-\subsection{Parallel tree traversal}
 
 \subsection{Unfolding trees with subtrees into one tree}
 
