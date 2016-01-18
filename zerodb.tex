@@ -44,6 +44,25 @@ The client interacts with the server during the execution of a query over a seri
 An encrypted index is stored on the server as a B-Tree, and the client traverses this index remotely to retrieve the necessary encrypted records.
 Buckets which the index consists of are encrypted before being uploaded to the server and decrypted only on the side of the client.
 
+\subsection{Optimizations specific for remote client}
+
+In most cases, all the query logics in ZeroDB happens client-side, e.g. client and storage are separated by a network channel with high latency.
+Therefore, we use a couple of primitives specific for this architecture.
+
+\begin{figure}
+	\begin{center}
+        \subfloat[When a tree (or sub-tree) is small, it can be fully pre-fetched to the client]{\label{fig:fetch-tree}\includegraphics[width=0.47\columnwidth]{fetch-tree.pdf}}
+        \qquad
+        \subfloat[When multiple branches of the tree needs reading/updating, tree traversal can be done in parallel]{\label{fig:parallel-traversal}\includegraphics[width=0.47\columnwidth]{parallel-traversal.pdf}}
+	\end{center}
+    \caption{ZeroDB-specific optimizations of working with B-Trees. Allows to pre-fetch a tree or find multiple values in number of steps equal to the tree height}
+	\label{fig:tree-traversal-optimizations}
+\end{figure}
+
+\subsection{Bulk-fetching small (sub)trees}
+
+\subsection{Parallel tree traversal}
+
 \subsection{Equality query (using example of keyword search)}
 \begin{figure}
 	\begin{center}
@@ -123,6 +142,10 @@ After that we (optionally) bulk-fetch all the objects which match the range quer
 %       Now we can lazily (iteratively) fetch ids from one set, one-by-one
 %       (already ordered by var3) and search if ids for the same var3 and var2
 %       contain the same id as we've currently fetched.
+
+%   c)  Less secure: opening deterministically encrypted ids to the server
+%       and let it do the interesection of result sets.
+%       // picture from notes to show what it is
 
 %       All the considerations above are also valid for joins
 
