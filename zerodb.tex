@@ -61,6 +61,20 @@ Therefore, we use a couple of primitives specific for this architecture.
 
 \subsection{Bulk-fetching small (sub)trees}
 
+When a tree (or sub-tree) is small enough, it could be more performant to fetch it all to the client.
+But we need to do that not bucket-by-bucket, as one would do with an index stored on a local hard drive, but in logarithmic number of steps.
+
+In order to do that, we fetch the root first~\figref{fig:fetch-tree}.
+Client unpacks the root bucket and fetches all its children in one query.
+Then it unpacks all the child nodes, figures out IDs of their children.
+This process continues until all the B-Tree is fetch.
+As one can clearly see, number of queries to perform such fetching is equal to height of the B-Tree $H$, proportional to logarithm of its size $\log{S_{\mbox{ix}}}$.
+
+When we fetch a tree, we implicitly show number of objects there $S_{\mbox{ix}}$ to a curious observer on the server.
+Based on the size of the read data, the observer would be able to obtain number close to $S_{\mbox{ix}}$ and associate it with bucket IDs we've just read.
+Therefore, this technique should be used as rarely as possible, combined with reading other data at the same time or with oblivious RAMs~\cite{path-oram,burst-oram,oram-multicloud,ods-wang-2014}.
+The latter would enable the observer to not learn bucket IDs.
+
 \subsection{Parallel tree traversal}
 
 \subsection{Equality query (using example of keyword search)}
