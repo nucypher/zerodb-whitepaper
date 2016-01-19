@@ -144,21 +144,18 @@ This approach opens up number of elements matching condition $v_1=a$ to the serv
 
 \subsubsection{Preorder approach}
 
+Prefetch approach could be slow and open too much information to the server.
+So, whenever possible, values are pre-ordered in the index.
+It works in the following way.
+
+Composite index to make a query where we select objects matching condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$ is the following in this case:
+\begin{equation*}
+    \mbox{BTree}((v_1, v_2) \rightarrow \mbox{BTree}(v_3 \rightarrow \mbox{TreeSet}(ids))).
+\end{equation*}
+For this query, we find a B-Tree (or multiple B-Trees) corresponding to the conditions and lazily traverse them in order of $v_3$.
+That makes limit orders much more performant and doesn't leak information about possible dataset size to the server.
+
 \subsubsection{Doing set intersection server-side}
-
-
-
-%   b)  pre-order by var3
-%       Indexes are, in fact, on composite keys (var1, var3) and (var2, var3)
-%       respectively:
-%       var1: BTree(var1 -> BTree(var3 -> TreeSet(ids)))
-%       var2: BTree((var2 -> BTree(var3 -> TreeSet(ids)))
-%       Now, for a query (var1=a and var2=b), we find pointers and lengths
-%       of datasets for var=1 and var=2 respectively.
-%       Now we can lazily (iteratively) fetch ids from one set, one-by-one
-%       (already ordered by var3) and search if ids for the same var3 and var2
-%       contain the same id as we've currently fetched.
-
 %   c)  Less secure: opening deterministically encrypted ids to the server
 %       and let it do the interesection of result sets.
 %       // picture from notes to show what it is
