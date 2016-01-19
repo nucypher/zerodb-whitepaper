@@ -156,6 +156,16 @@ For this query, we find a B-Tree (or multiple B-Trees) corresponding to the cond
 That makes limit orders much more performant and doesn't leak information about possible dataset size to the server.
 
 \subsubsection{Doing set intersection server-side}
+
+\begin{figure}
+	\begin{center}
+        \subfloat[]{\label{fig:keytree-branch-node}\includegraphics[width=0.47\columnwidth]{keytree-branch-bucket.pdf}}
+        \qquad
+        \subfloat[]{\label{fig:keytree-leaf-node}\includegraphics[width=0.47\columnwidth]{keytree-leaf-bucket.pdf}}
+	\end{center}
+    \caption{}
+	\label{fig:server-side-sets}
+\end{figure}
 %   c)  Less secure: opening deterministically encrypted ids to the server
 %       and let it do the interesection of result sets.
 %       // picture from notes to show what it is
