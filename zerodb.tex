@@ -175,9 +175,14 @@ Bottleneck of performance of many complex queries (such as multi-keyword search 
 For multi-keyword search for example, doing set intersections server-side would help a lot when each keyword has too many pages associated with it (which is possible for extremely large datasets).
 
 Let's consider a query where $v_1=a$ and $v_2=b$.
-In order to do that, we open up deterministically encrypted IDs $D(id_i)$ of all object objects matching each of these conditions to the server.
+In order to do that, we open up deterministically encrypted IDs $D(id_i)$ of all object objects matching each of these conditions to the server~(\figref{fig:server-side-sets}).
 The server can see how many repetitions each ID has, number of these repetitions is equal to number of conditions satisfied for this ID.
 The server sends those deterministically encrypted IDs which satisfy all conditions ($2$ conditions in our example) to the client.
+
+In order to do that, buckets are split into two sections~(\figref{fig:server-side-sets}~\subref{fig:keytree-branch-node},~\subref{fig:keytree-leaf-node}).
+The first (top) section is encrypted with key $k^a$, known to the client but never known to the server.
+The second (bottom) section is encrypted with a key $k^b_{*i}$.
+Keys from $k^b$ family are hierarchical: child-keys $k^b_{*i}$ derived from a key$k^b_*$  which can decrypt bottom section of a node can decrypt bottom sections of all its child node~(\figref{fig:keytree}).
 
 % ... and how we do that!
 
