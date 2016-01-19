@@ -162,22 +162,24 @@ This makes limit orders much more performant and does not leak information about
         \subfloat[Branch node]{\label{fig:keytree-branch-node}\includegraphics[width=0.47\columnwidth]{keytree-branch-bucket.pdf}}
         \qquad
         \subfloat[Leaf node]{\label{fig:keytree-leaf-node}\includegraphics[width=0.47\columnwidth]{keytree-leaf-bucket.pdf}}\\
-        \subfloat[Tree of keys]{\label{fig:keytree}\includegraphics[width=0.7\columnwidth]{keytree.pdf}}
+        \subfloat[Hierarchy of keys (same as hierarchy of buckets)]{\label{fig:keytree}\includegraphics[width=0.7\columnwidth]{keytree.pdf}}
 	\end{center}
     \caption{B-Tree structure which supports server-side set operations.
-    TBC\ldots}
+        In order for server to do these operations, client allows it to see deterministically encrypted object IDs $D(id_i)$.
+        The server can count number of occurrences of each $D(id_i)$, and those values which are repeated same number of times as number of conditions in ``and'' query are the ones client wants to be returned.
+    }
 	\label{fig:server-side-sets}
 \end{figure}
-%   c)  Less secure: opening deterministically encrypted ids to the server
-%       and let it do the interesection of result sets.
-%       // picture from notes to show what it is
 
-%       All the considerations above are also valid for joins
+Bottleneck of performance of many complex queries (such as multi-keyword search or queries with a product of multiple conditions) is sets intersections.
+For multi-keyword search for example, doing set intersections server-side would help a lot when each keyword has too many pages associated with it (which is possible for extremely large datasets).
 
-%       ** All "btrees of treesets" or "btrees(var1) of btrees(var2)" can be
-%       replaced with indexes on tuples (var1, var2) to have the same total
-%       index height for all values of var2 (which could have performance and
-%       security benefits)
+Let's consider a query where $v_1=a$ and $v_2=b$.
+In order to do that, we open up deterministically encrypted IDs $D(id_i)$ of all object objects matching each of these conditions to the server.
+The server can see how many repetitions each ID has, number of these repetitions is equal to number of conditions satisfied for this ID.
+The server sends those deterministically encrypted IDs which satisfy all conditions ($2$ conditions in our example) to the client.
+
+% ... and how we do that!
 
 %   "Proper" joins are a little unclear. We don't want to open deterministically encrypted *values* to the server
 %   b/c it opens up too much information for statistical analysis.
