@@ -10,7 +10,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="982.13184"
-   height="293.79102"
+   height="321.29102"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -39,9 +39,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="545.61137"
-     inkscape:cy="133.56309"
+     inkscape:zoom="1.979899"
+     inkscape:cx="529.45083"
+     inkscape:cy="190.08151"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -62,7 +62,7 @@
        enabled="true"
        snapvisiblegridlinesonly="true"
        originx="283.78613px"
-       originy="-792.92383px" />
+       originy="-765.42383px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -260,13 +260,13 @@
     <text
        xml:space="preserve"
        style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="255"
+       x="259"
        y="182.36218"
        id="text4007-3"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4009-2"
-         x="255"
+         x="259"
          y="182.36218">...</tspan></text>
     <text
        xml:space="preserve"
@@ -395,88 +395,88 @@
        transform="translate(-10.5,-8.125)" />
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="16"
+       style="font-size:15px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="15.599998"
        y="187.36218"
        id="text4754"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4756"
-         x="16"
+         x="15.599998"
          y="187.36218"
-         style="font-size:12px">Det(id<tspan
-   style="font-size:12px;baseline-shift:sub"
-   id="tspan4758">2</tspan>)</tspan></text>
+         style="font-size:15px">D(id<tspan
+   style="font-size:15px;baseline-shift:sub"
+   id="tspan4758">1</tspan>)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="81"
+       style="font-size:15px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="80.600006"
        y="187.36218"
        id="text4754-4"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4756-5"
-         x="81"
+         x="80.600006"
          y="187.36218"
-         style="font-size:12px">Det(id<tspan
-   style="font-size:12px;baseline-shift:sub"
-   id="tspan4758-1">1</tspan>)</tspan></text>
+         style="font-size:15px">D(id<tspan
+   style="font-size:15px;baseline-shift:sub"
+   id="tspan4758-1">2</tspan>)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="146"
+       style="font-size:15px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="145.59998"
        y="187.36218"
        id="text4754-45"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4756-7"
-         x="146"
+         x="145.59998"
          y="187.36218"
-         style="font-size:12px">Det(id<tspan
-   style="font-size:12px;baseline-shift:sub"
-   id="tspan4758-6">5</tspan>)</tspan></text>
+         style="font-size:15px">D(id<tspan
+   style="font-size:15px;baseline-shift:sub"
+   id="tspan4758-6">3</tspan>)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="333"
+       style="font-size:15px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="332.59998"
        y="187.36218"
        id="text4754-9"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4756-8"
-         x="333"
+         x="332.59998"
          y="187.36218"
-         style="font-size:12px">Det(id<tspan
-   style="font-size:12px;baseline-shift:sub"
-   id="tspan4758-4">n-1</tspan>)</tspan></text>
+         style="font-size:15px">D(id<tspan
+   style="font-size:15px;baseline-shift:sub"
+   id="tspan4758-4">n-2</tspan>)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="404"
+       style="font-size:15px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="397.59998"
        y="187.36218"
        id="text4754-4-6"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4756-5-9"
-         x="404"
+         x="397.59998"
          y="187.36218"
-         style="font-size:12px">Det(id<tspan
-   style="font-size:12px;baseline-shift:sub"
-   id="tspan4758-1-8">n</tspan>)</tspan></text>
+         style="font-size:15px">D(id<tspan
+   style="font-size:15px;baseline-shift:sub"
+   id="tspan4758-1-8">n-1</tspan>)</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="463"
+       style="font-size:15px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="468.59998"
        y="187.36218"
        id="text4754-45-3"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4756-7-2"
-         x="463"
+         x="468.59998"
          y="187.36218"
-         style="font-size:12px">Det(id<tspan
-   style="font-size:12px;baseline-shift:sub"
-   id="tspan4758-6-3">n-2</tspan>)</tspan></text>
+         style="font-size:15px">D(id<tspan
+   style="font-size:15px;baseline-shift:sub"
+   id="tspan4758-6-3">n</tspan>)</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 535.5,10.48718 c 60,10 80,110 0,135"
@@ -525,8 +525,10 @@
          y="194.86218"
          style="text-align:center;text-anchor:middle"
          id="tspan4903">with k<tspan
-   style="font-size:65.00091553%;text-align:center;text-anchor:middle;baseline-shift:super"
-   id="tspan4847-2">b</tspan></tspan></text>
+   style="font-size:65%;baseline-shift:super"
+   id="tspan3093">b</tspan><tspan
+   style="font-size:65%;baseline-shift:sub"
+   id="tspan3095">*</tspan></tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 15.5,45.48718 -70,-35"
@@ -598,6 +600,12 @@
          sodipodi:role="line"
          x="-285"
          y="254.86218"
-         id="tspan3102">encrypted object ID</tspan></text>
+         id="tspan3102">encrypted object ID</tspan><tspan
+         sodipodi:role="line"
+         x="-285"
+         y="282.36218"
+         id="tspan3247">ordered by id, not v<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3249">i</tspan></tspan></text>
   </g>
 </svg>
