@@ -183,8 +183,20 @@ In order to do that, buckets are split into two sections~(\figref{fig:server-sid
 The first (top) section is encrypted with key $k^a$, known to the client but never known to the server.
 The second (bottom) section is encrypted with a key $k^b_{*i}$.
 Keys from $k^b$ family are hierarchical: child-keys $k^b_{*i}$ derived from a key$k^b_*$  which can decrypt bottom section of a node can decrypt bottom sections of all its child node~(\figref{fig:keytree}).
+The keys can be derived as $k^b_{*i} = \mbox{SHA256}(k^b_* + i)$, for example.
 
-% ... and how we do that!
+The client traverses the B-Tree along the ``contour'' of the range (red at~\figref{fig:keytree}).
+It gives keys $k^b_i$ of buckets which are fully within the range and in-range deterministically encrypted object IDs $D(id_i)$ to the server.
+The server, using this information, is able to figure out all children of those buckets and $D(id_i)$ associated with them.
+After adding $D(id_i)$ given by the client, the server can count how many times each value is repeated.
+Values which are repeated same number of times as number of conditions in ``and'' query are given back to the client.
+
+The server in this case can figure out total number of records matching any of given conditions (unknown to the server) $n_1$,
+number of records matching exactly two of the conditions $n_2$,
+etc. until the maximum number of conditions.
+The server also learns ``parent-child'' relationships between some of buckets.
+The server doesn't learn the order of the objects,
+it doesn't learn which conditions is the client applying.
 
 %   "Proper" joins are a little unclear. We don't want to open deterministically encrypted *values* to the server
 %   b/c it opens up too much information for statistical analysis.
