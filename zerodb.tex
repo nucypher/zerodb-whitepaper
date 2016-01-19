@@ -41,9 +41,9 @@ Review of existing systems needed:~\cite{cipherbase}~\cite{cryptdb}~\cite{gentry
 \section{Query protocol}
 
 The basis of the end-to-end encrypted query protocol is as follows.
-The client interacts with the server during the execution of a query over a series of multiple round trips.
+The client interacts with the server during the execution of a query over a series of round trips.
 An encrypted index is stored on the server as a B-Tree, and the client traverses this index remotely to retrieve the necessary encrypted records.
-Buckets which the index consists of are encrypted before being uploaded to the server and decrypted only on the side of the client.
+The index consists of buckets which are encrypted before being uploaded to the server and only decrypted client-side.
 
 \subsection{Equality query (using example of keyword search)}
 \begin{figure}
@@ -65,7 +65,7 @@ In order to make the database end-to-end encrypted yet still capable of performi
 The server, which stores the buckets, never knows the encryption key used.
 The objects referenced by the leaf nodes of the B-Tree indexes are also encrypted client-side.
 As a result, the server does not know how individual objects are organized within the B-Tree or whether they even belong to an index at all.
-Since ZeroDB is encryption agnostic, probabilistic encryption can be used so that the server cannot compare objects, not even for equality.
+Since ZeroDB is encryption agnostic, probabilistic encryption can be used so that the server cannot even compare objects for equality.
 
 When a client performs a query, it asks the server to return buckets of the tree as it traverses the index remotely~\figref{fig:communication}.
 Buckets can be cached client-side so that subsequent queries do not make unnecessary network calls.
@@ -97,7 +97,7 @@ The other case is when we want to get \emph{all} objects in the range (select *)
 We download subsection of B-Tree matching the range query level-by-level in logarithmic number of steps in this case~\figref{fig:range-query-star}.
 To do that, we start with the root bucket.
 Then, we download all the child buckets which match the range at once.
-Then all children of those buckets, etc. until we get to the leaf nodes.
+Then all children of those buckets, repeating until we get to the leaf nodes.
 After that we (optionally) bulk-fetch all the objects which match the range query at once.
 This is done in a way similar to prefetching all trees (Section~\ref{sec:bulk-fetching}).
 Selecting all objects in a range reveals the approximate number of objects in this range to the server (the range and field names remain secret).
@@ -107,8 +107,8 @@ Selecting all objects in a range reveals the approximate number of objects in th
 So far we described simple queries.
 But queries may contain multiple conditions at the same time.
 Depending on number of objects matching each condition and desired security properties we can use different approaches.
-Making a query with ``or'' condition requires simply zip-joining two sorted datasets, so we don't consider that to be problematic.
-Let's consider a query where we select objects matching condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$.
+Making a query with ``or'' condition requires simply zip-joining two sorted datasets, so we do not consider that to be problematic.
+Instead, let us consider a query where we select objects matching the condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$.
 
 \subsubsection{Prefetch approach}
 %    a) var1: BTree(var1 -> TreeSet(ids))
@@ -121,39 +121,39 @@ Let's consider a query where we select objects matching condition $(v_1 = a) \,\
 %       Pros: easy to reorder afterwards
 %       Cons: very strong hint about how large the dataset is (unless reading more data than actually need), bad performance if words have ~same weights
 
-In case number of items with $v_1=a$ is small, it could be worthwhile to download all the subset of object IDs matching this condition.
-It could practically happen in a multi-keyword search when one word is rare.
+In case the number of items with $v_1=a$ is small, it could be worthwhile to download the entire subset of object IDs matching this condition.
+This could be practical in a multi-keyword search when one word is rare.
 
-We can use following indexes for this kind of query:
+We can use the following indexes for this kind of query:
 \begin{align*}
     & \mbox{BTree}(v_1 \rightarrow \mbox{TreeSet}(ids)),\\
     & \mbox{BTree}(v_2 \rightarrow \mbox{TreeSet}(ids)),\\
     & \mbox{BTree}(id \rightarrow v_3).
 \end{align*}
 
-Firstly, we estimate which condition has the smallest number of matching elements.
-We can do so by fetching ``contours'' of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine height of the tree and approximate distance between smallest and largest elements, knowing average size of a bucket, and it ``costs'' $H$ requests between client and server.
+First, we estimate which condition has the smallest number of matching elements.
+We can do so by fetching ``contours'' of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine the height of the tree and approximate distance between the smallest and largest elements, knowing average size of a bucket, and it ``costs'' $H$ requests between client and server.
 
 We prefetch a TreeSet for the most ``lightweight'' condition (Sec.~\ref{sec:bulk-fetching}).
-Then we bulk-search~(Sec.~\ref{sec:parallel-traversal}) these IDs in the larger TreeSet (and if we don't find an ID in the leaf node, we drop it).
+Then we bulk-search~(Sec.~\ref{sec:parallel-traversal}) these IDs in the larger TreeSet (and if we do not find an ID in the leaf node, we drop it).
 
-After that, we want to sort the small subset of IDs we've got in order of $v_3$.
-We do parallel traversal of the third B-Tree and find which value of $v_3$ corresponds to each ID.
+After that, we want to sort the small subset of fetched IDs by $v_3$.
+We do a parallel traversal of the third B-Tree and find which value of $v_3$ corresponds to each ID.
 
-This approach opens up number of elements matching condition $v_1=a$ to the server while this condition remains unknown.
+This approach reveals the number of elements matching condition $v_1=a$ to the server, although the condition itself remains unknown.
 
 \subsubsection{Preorder approach}
 
-Prefetch approach could be slow and open too much information to the server.
+The prefetch approach could be slow and reveal too much information to the server.
 So, whenever possible, values are pre-ordered in the index.
 It works in the following way.
 
-Composite index to make a query where we select objects matching condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$ is the following in this case:
+The composite index to make a query selecting objects matching the condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$ is:
 \begin{equation*}
     \mbox{BTree}((v_1, v_2) \rightarrow \mbox{BTree}(v_3 \rightarrow \mbox{TreeSet}(ids))).
 \end{equation*}
 For this query, we find a B-Tree (or multiple B-Trees) corresponding to the conditions and lazily traverse them in order of $v_3$.
-That makes limit orders much more performant and doesn't leak information about possible dataset size to the server.
+This makes limit orders much more performant and does not leak information about possible dataset size to the server.
 
 \subsubsection{Doing set intersection server-side}
 
@@ -202,16 +202,16 @@ Therefore, we use two primitives specific for this architecture.
 \label{sec:bulk-fetching}
 
 When a tree (or sub-tree) is small enough, it could be more performant to fetch the entire tree to the client.
-But we do not need to do that bucket-by-bucket, as one would do with an index stored on a local hard drive, but in a logarithmic number of steps.
+We do not need to do that bucket-by-bucket, as one would do with an index stored on a local hard drive, but in a logarithmic number of steps.
 
 In order to do that, we fetch the root first~\figref{fig:fetch-tree}.
 The client unpacks the root bucket and fetches all its children in one query.
 Then it unpacks all the child nodes and learns the IDs of their children.
-This process continues until all the B-Tree is fetched.
-Thus, the number of queries to perform such fetching is equal to height of the B-Tree $H$, proportional to the logarithm of its size $\log{S_{\mbox{ix}}}$.
+This process continues until the entire B-Tree is fetched.
+Thus, the number of queries is equal to the height of the B-Tree, $H$, proportional to the logarithm of its size, $\log{S_{\mbox{ix}}}$.
 
-When we fetch a tree, we implicitly show the number of objects it contains, $S_{\mbox{ix}}$, to a curious observer on the server.
-Based on the size of the read data, the observer would be able to obtain a number close to $S_{\mbox{ix}}$ and associate it with the bucket IDs just read.
+When we fetch a tree, we implicitly show the number of objects it contains, $S_{\mbox{ix}}$, to the server.
+Based on the size of the read data, the observer would be able to infer a number close to $S_{\mbox{ix}}$ and associate it with the bucket IDs just read.
 Therefore, this technique should be used as rarely as possible, combined with reading other data at the same time or with oblivious RAMs~\cite{path-oram,burst-oram,oram-multicloud,ods-wang-2014}.
 The latter would prevent the observer from learning bucket IDs.
 
@@ -225,9 +225,9 @@ In order to fix that, we traverse the B-Tree in parallel~\figref{fig:parallel-tr
 We first fetch the root of the tree.
 Then, we fetch only those child-buckets of the root which are relevant to the values in our query.
 Then, we fetch only the relevant children of those, etc.
-This way, in $H$ steps we do tree traversal for all the necessary values.
+This way, we do tree traversal for all the necessary values in $H$ steps.
 
-When we do parallel traversal, a curious observer would only be able to see access patterns but they would not be able to distinguish access patterns belonging to each of values individually.
+When we do parallel traversal, the server would be able to see access patterns but it would not be able to distinguish access patterns belonging to each of the values individually.
 
 \section{Sharing data}
 
