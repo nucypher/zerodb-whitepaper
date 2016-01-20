@@ -199,9 +199,12 @@ The server also learns ``parent-child'' relationships between some of buckets.
 The server does not learn the order of the objects,
 it does not learn which conditions the client is applying.
 
-%   "Proper" joins are a little unclear. We don't want to open deterministically encrypted *values* to the server
-%   b/c it opens up too much information for statistical analysis.
-%   We can use default ZODB approach of events/subscribers when related objects are modified instead
+\subsubsection{Related objects}
+
+We base on ZODB which uses object references instead of joins~\cite{zodb-references},
+similar to mongo's database references~\cite{mongo-db-references}.
+In order to keep everything consistent, ZODB can fire events at commit time~\cite{zope-events} to keep back-references and indexes up to date.
+In ZeroDB (as in ZODB) we can create indexes on attributes of related objects, much as we create normal indexes.
 
 \subsection{Optimizations specific for remote client}
 
@@ -250,6 +253,13 @@ This way, we do tree traversal for all the necessary values in $H$ steps.
 When we do parallel traversal, the server would be able to see access patterns but it would not be able to distinguish access patterns belonging to each of the values individually.
 
 \section{Sharing data}
+
+If there are multiple users of the same dataset, there always remains a threat of sharing the same encryption key with all parties.
+Since architecture of ZeroDB allows to use any encryption algorithm, we can use proxy re-encryption~\cite{afgh,libert2011unidirectional}
+or delta-keys~\cite{delta-keys,mylar} to share data with other users of the same dataset (third parties).
+These algorithms allow the third parties to hold an encryption key not equal to that used to encrypt the data,
+yet being able to do the same queries as data creator can, until the server revokes their key.
+We also can share subsets of data granularly, using same ideas as we use for querying the data in end-to-end encrypted manner.
 
 \section{Security analysis}
 
