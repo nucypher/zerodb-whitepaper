@@ -261,6 +261,16 @@ These algorithms allow the third parties to hold an encryption key not equal to 
 yet being able to do the same queries as data creator can, until the server revokes their key.
 We also can share subsets of data granularly, using same ideas as we use for querying the data in end-to-end encrypted manner.
 
+Sharing whole dataset is done as the following.
+Suppose user $A$ owns the dataset and wants to share it with user $B$.
+User $A$ has a key pair $priv_a/pub_a$, user $B$~--- $priv_b/pub_b$ in case we use one of Proxy re-encryption algorithms~\cite{afgh,libert2011unidirectional}.
+All objects and buckets are encrypted with random content-encryption keys $cek_i$ (individual for each object) using a block cipher algorithm (AES256/GCM by default).
+The $cek$ is encrypted with key encrypting key $priv_a$.
+So, we store $e_a(cek_i) = \mbox{encrypt}(priv_a, cek_i)$ and $c_i(obj) = \mbox{encrypt}(cek_i, data)$.
+
+When we want user $A$ to give permissions to the whole dataset and indexes to user $B$, he constructs a re-encryption key $r_{ab}$ such that
+the server can transform content-encryption key as $e_b(cek_i) = \mbox{transform}(r_{ab}, e_a(cek_i))$.
+
 \section{Security analysis}
 
 \section{Performance}
