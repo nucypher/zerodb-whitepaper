@@ -39,6 +39,15 @@ Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to ena
 
 Review of existing systems needed:~\cite{cipherbase}~\cite{cryptdb}~\cite{gentry}~\cite{smart}
 
+Given the obvious cost, performance, and scalability benefits outsourcing of on-premise infrastructure to cloud environments is accelerating.
+However, concerns over data security, coupled with the frequency of high-profile data breaches, hinder cloud adoption in highly-regulated industries, such as financial services.
+While strong encryption can alleviate many of these concerns by guaranteeing data confidentiality, once data is encrypted, it is no longer usable.
+In light of this, several strategies for computing on encrypted data have recently emerged.
+Such strategies seek to provide the benefits of encryption while preserving the functionality of encryted data.
+
+These techniques typically fall into two broad categories: (1) homomorphic encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries.\cite{tutorial}
+
+
 \section{Query protocol}
 
 The basis of the end-to-end encrypted query protocol is as follows.
