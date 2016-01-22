@@ -319,14 +319,6 @@ Using deterministic or order-preserving encryption visible to the server could b
 However, even traversal of B-Trees leaves the possibility for an attacker to collect access statistics and infer the data in the database~\cite{access-pattern-attack}.
 We provide a security analysis and an example of the number of queries necessary for such an attack.
 
-\begin{figure}
-	\begin{center}
-        \includegraphics[width=0.7\columnwidth]{surname-attack.pdf}
-	\end{center}
-    \caption{Fraction of a database of last names leaked to a passive observer depending on the number of queries made to the database}
-	\label{fig:surname-attack}
-\end{figure}
-
 \subsection{Threat model}
 
 We adopt a threat model similar to the one used for the security analysis of CipherBase~\cite{cipherbase}.
@@ -336,12 +328,30 @@ We assume that both strong and weak adversaries are passive (honest but curious)
 
 \subsection{Data confidentiality}
 
+\begin{figure}
+	\begin{center}
+        \includegraphics[width=0.7\columnwidth]{surname-attack.pdf}
+	\end{center}
+    \caption{Fraction of a database of last names leaked to a passive observer depending on number of queries made to the database}
+	\label{fig:surname-attack}
+\end{figure}
+
 In ZeroDB, all contents of the database and indexes are stored as encrypted objects.
 Therefore, a weak adversary does not learn anything except for database size (including the number of fields, etc), even during queries.
 So, ZeroDB provides \emph{semantic security} against a weak adversary.
 
 A strong adversary, on the other hand, is able to observe access patterns and collect statistics of those over time.
 So, we provide \emph{operational security} against a strong adversary.
+
+First, we consider search queries which result just in tree traversal.
+Those could be limit orders for queries which don't involve pulling a large subset of the index to the client.
+Let's assume for simplicity that all we have in a database index is a B-Tree of surnames of customers.
+An active adversary is able to acquire statistics of accesses of the index leaf nodes when searches of, say, $10$ people with a given last name are performed.
+However, the amount of statistics should be large enough to be able to distinguish different records in the database.
+If we assume that probability of a given surname to appear in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
+and that keywords are distributed across queries according to Poisson distribution,
+an adversary needs to observe two keywords at least $N_1$ and $N_2$ times such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
+Amount of last names which can be revealed by a strong adversary depending in number of queries is show on~\figref{fig:surname-attack}.
 
 \section{Performance}
 

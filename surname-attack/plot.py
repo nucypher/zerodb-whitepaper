@@ -11,7 +11,7 @@ dfrac = (deltas + 1e-20) / N
 
 
 def frac_leaked(q):
-    attacked = dfrac * q > q ** 0.5
+    attacked = dfrac * q > (2 * q * df['count'] / N) ** 0.5
     N_a = df['count'][attacked].sum()
     return float(N_a) / N
 
