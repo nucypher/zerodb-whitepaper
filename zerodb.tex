@@ -336,6 +336,13 @@ We assume that both strong and weak adversaries are passive (honest but curious)
 
 \subsection{Data confidentiality}
 
+In ZeroDB, all contents of the database and indexes are stored as encrypted objects.
+Therefore, a weak adversary doesn't learn anything except for database size (including number of fields, etc), even during queries.
+So, ZeroDB provides \emph{semantic security} against a weak adversary.
+
+Strong adversary, on the other hand, is able to observe access patterns and collect statistics of those over time.
+So, we provide \emph{operational security} against a strong adversary.
+
 \section{Performance}
 
 \subsection{Unfolding trees with subtrees into one tree}
