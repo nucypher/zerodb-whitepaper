@@ -166,6 +166,7 @@ For this query, we find a B-Tree (or multiple B-Trees) corresponding to the cond
 This makes limit orders much more performant and does not leak information about possible dataset size to the server.
 
 \subsubsection{Doing set intersection server-side}
+\label{sec:server-intersection}
 
 \begin{figure}
 	\begin{center}
@@ -310,6 +311,14 @@ This gives the server ability to re-encrypt all buckets within the range specifi
 
 \section{Security analysis}
 
+ZeroDB is agnostic to which encryption algorithm use.
+By default we use authenticated strong encryption {AES-256} in GCM mode.
+Nothing is decrypted on the server unless we choose to use server-side set intersections~(Sec.~\ref{sec:server-intersection}).
+
+Using deterministic or order-preserving encryption visible to the server could be detrimental for security of the database in certain cases~\cite{cryptdb-hacked}.
+However, even traversal of B-Trees leaves a possibility for attacher to collect statistics of accesses and infer data in the database~\cite{access-pattern-attack}.
+We provide security analysis and example of number of queries necessary for such an attack.
+
 \begin{figure}
 	\begin{center}
         \includegraphics[width=0.7\columnwidth]{surname-attack.pdf}
@@ -317,6 +326,15 @@ This gives the server ability to re-encrypt all buckets within the range specifi
     \caption{Fraction of a database of last names leaked to a passive observer depending on number of queries made to the database}
 	\label{fig:surname-attack}
 \end{figure}
+
+\subsection{Threat model}
+
+We adopt threat model similar to one used for security analysis of CipherBase~\cite{cipherbase}.
+We introduce a \emph{strong adversary}, who has unlimited observational power, can view contents of memory and disk at every moment of time.
+A \emph{weak adversary} can observe only a snapshot of memory and disk at one particular moment of time.
+We assume that both strong and weak adversaries are passive (honest but curious) and do not return wrong results to the client.
+
+\subsection{Data confidentiality}
 
 \section{Performance}
 
