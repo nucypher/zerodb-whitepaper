@@ -254,12 +254,12 @@ When we do parallel traversal, the server would be able to see access patterns b
 
 \section{Sharing data}
 
-If there are multiple users of the same dataset, there always remains a threat of sharing the same encryption key with all parties.
-Since architecture of ZeroDB allows to use any encryption algorithm, we can use proxy re-encryption~\cite{afgh,libert2011unidirectional}
-or delta-keys~\cite{delta-keys,mylar} to share data with other users of the same dataset (third parties).
-These algorithms allow the third parties to hold an encryption key not equal to that used to encrypt the data,
-yet being able to do the same queries as data creator can, until the server revokes their key.
-We also can share subsets of data granularly, using same ideas as we use for querying the data in end-to-end encrypted manner.
+If there are multiple users of the same encrypted dataset, there are serious shortcomings with sharing the encryption key with all parties.
+Since the architecture of ZeroDB allows using any encryption algorithm, we can use proxy re-encryption~\cite{afgh,libert2011unidirectional}
+or delta-keys~\cite{delta-keys,mylar} to share data with other users (third parties) of the same dataset.
+These algorithms allow the third party to hold an encryption key other than that used to encrypt the data,
+while still being able to do the same queries as the data owner, until the server revokes their key.
+We can also granularly share subsets of data, by combining these sharing algorithms with ZeroDB's query functionality.
 
 Sharing whole dataset is done as the following.
 Suppose user $A$ owns the dataset and wants to share it with user $B$.
