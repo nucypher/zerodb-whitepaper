@@ -281,8 +281,23 @@ Let's first exemplify granular sharing data in a scheme when $A$ shows encryptio
 It is possible to share data granularly in this case in such a way that $A$ has to only send $B$ number of keys proportional to $\log{M}$ rather than $M$.
 
 In order to do that, keys $k^a$ must form tree hierarchy similar to the one we had for set intersections~(\figref{fig:keytree}).
+Client $A$ traverses the tree along the beginning and the end of the range.
+It shares with $B$ keys for those buckets which give ability to do tree traversal within this range (buckets with blue background in~\figref{fig:keytree}).
+However, there are buckets which are partly within the range.
+Client $A$ passes key-reference pairs for buckets which belong to the contour of the range,
+there should be no more than $2\,s_b$ such pairs where $s_b$ is maximum bucket size.
+The set of keys giving access to the in-range fraction of the index and the in-range contents of the buckets from contour of the range are given to $B$ encrypted with his public key.
 
-XXX~\cite{hierarchical-pre}
+The described mechanism of sharing suffers from the fact that $B$ is given all information to decrypt objects within the range at once.
+In order to make this access revokable, we need to use proxy re-encryption.
+However, client $A$ should give hierarchical rights to re-encrypt the data to the server rather to client $B$.
+E.g. the server can only re-encrypt objects within the range given a set of re-encryption keys $r_{ab}$.
+It is possible to do using a conditional proxy re-encryption scheme (C-PRE)~\cite{conditional-pre-2009,unidirectional-pre-2010,conditional-pre-2014,hierarchical-pre}.
+
+Usually such encryption schemes support giving a product of multiple equality conditions.
+Conditions which we apply would be object IDs in bucket hierarchy starting from the top.
+For example C-PRE encryption of a bucket in the second layer of the tree $b_1$ would give the server ability to derive re-encryption key for all of its children $b_{1*}$.
+This gives the server ability to re-encrypt all buckets within the range specified by $A$, yet requiring $A$ to calculate only number of keys proportional to $\log$ of number of records shared.
 
 \section{Security analysis}
 
