@@ -311,36 +311,36 @@ This gives the server ability to re-encrypt all buckets within the range specifi
 
 \section{Security analysis}
 
-ZeroDB is agnostic to which encryption algorithm use.
-By default we use authenticated strong encryption {AES-256} in GCM mode.
+ZeroDB is agnostic to the encryption algorithm used.
+By default, we use authenticated strong encryption ({AES-256} in GCM mode).
 Nothing is decrypted on the server unless we choose to use server-side set intersections~(Sec.~\ref{sec:server-intersection}).
 
-Using deterministic or order-preserving encryption visible to the server could be detrimental for security of the database in certain cases~\cite{cryptdb-hacked}.
-However, even traversal of B-Trees leaves a possibility for attacher to collect statistics of accesses and infer data in the database~\cite{access-pattern-attack}.
-We provide security analysis and example of number of queries necessary for such an attack.
+Using deterministic or order-preserving encryption visible to the server could be detrimental to the security of the database in certain cases~\cite{cryptdb-hacked}.
+However, even traversal of B-Trees leaves the possibility for an attacker to collect access statistics and infer the data in the database~\cite{access-pattern-attack}.
+We provide a security analysis and an example of the number of queries necessary for such an attack.
 
 \begin{figure}
 	\begin{center}
         \includegraphics[width=0.7\columnwidth]{surname-attack.pdf}
 	\end{center}
-    \caption{Fraction of a database of last names leaked to a passive observer depending on number of queries made to the database}
+    \caption{Fraction of a database of last names leaked to a passive observer depending on the number of queries made to the database}
 	\label{fig:surname-attack}
 \end{figure}
 
 \subsection{Threat model}
 
-We adopt threat model similar to one used for security analysis of CipherBase~\cite{cipherbase}.
-We introduce a \emph{strong adversary}, who has unlimited observational power, can view contents of memory and disk at every moment of time.
+We adopt a threat model similar to the one used for the security analysis of CipherBase~\cite{cipherbase}.
+We introduce a \emph{strong adversary}, who has unlimited observational power and can view the contents of memory and disk at every moment of time.
 A \emph{weak adversary} can observe only a snapshot of memory and disk at one particular moment of time.
 We assume that both strong and weak adversaries are passive (honest but curious) and do not return wrong results to the client.
 
 \subsection{Data confidentiality}
 
 In ZeroDB, all contents of the database and indexes are stored as encrypted objects.
-Therefore, a weak adversary doesn't learn anything except for database size (including number of fields, etc), even during queries.
+Therefore, a weak adversary does not learn anything except for database size (including the number of fields, etc), even during queries.
 So, ZeroDB provides \emph{semantic security} against a weak adversary.
 
-Strong adversary, on the other hand, is able to observe access patterns and collect statistics of those over time.
+A strong adversary, on the other hand, is able to observe access patterns and collect statistics of those over time.
 So, we provide \emph{operational security} against a strong adversary.
 
 \section{Performance}
