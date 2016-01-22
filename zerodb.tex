@@ -37,15 +37,16 @@ Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to ena
 
 \section{Introduction}
 
-Review of existing systems needed:~\cite{cipherbase}~\cite{cryptdb}~\cite{gentry}~\cite{smart}
-
-Given the obvious cost, performance, and scalability benefits outsourcing of on-premise infrastructure to cloud environments is accelerating.
-However, concerns over data security, coupled with the frequency of high-profile data breaches, hinder cloud adoption in highly-regulated industries, such as financial services.
+Given the cost, performance, and scalability benefits, outsourcing of on-premise infrastructure to cloud environments is accelerating.
+However, concerns over data security and the frequency of high-profile data breaches hinder cloud adoption in highly-regulated industries, such as financial services.
 While strong encryption can alleviate many of these concerns by guaranteeing data confidentiality, once data is encrypted, it is no longer usable.
-In light of this, several strategies for computing on encrypted data have recently emerged.
-Such strategies seek to provide the benefits of encryption while preserving the functionality of encryted data.
+Several strategies for computing on encrypted data have recently emerged that seek to provide the benefits of encryption while preserving the functionality of encryted data.
 
-These techniques typically fall into two broad categories: (1) homomorphic encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries.\cite{tutorial}
+These techniques typically fall into two broad categories: (1) homomorphic encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries\cite{tutorial}. These two approaches can be further deconstructed into (1) fully homomorphic encryption (FHE) and partially homomorphic encryption (PHE) and (2) client-end solutions and in-cloud solutions, resulting in the following taxonomy:
+
+[Insert taxonomy of approaches here]
+
+Review of existing systems needed:~\cite{cipherbase}~\cite{cryptdb}~\cite{gentry}~\cite{smart}
 
 
 \section{Query protocol}
@@ -271,43 +272,42 @@ These algorithms allow the third party to hold an encryption key other than that
 while still being able to do the same queries as the data owner, until the server revokes their key.
 We can also granularly share subsets of data, by combining these sharing algorithms with ZeroDB's query functionality.
 
-Sharing whole dataset is done as the following.
+Sharing an entire dataset is done as follows.
 Suppose user $A$ owns the dataset and wants to share it with user $B$.
-User $A$ has a key pair $priv_a/pub_a$, user $B$~--- $priv_b/pub_b$ in case we use one of Proxy re-encryption algorithms~\cite{afgh,libert2011unidirectional}.
+In the case of proxy re-encryption algorithms~\cite{afgh,libert2011unidirectional}, user $A$ has a key pair $priv_a/pub_a$ and user $B$ has a key pair $priv_b/pub_b$.
 All objects and buckets are encrypted with random content-encryption keys $cek_i$ (individual for each object) using a block cipher algorithm (AES256/GCM by default).
 The $cek$ is encrypted with key encrypting key $priv_a$.
 So, we store $e_a(cek_i) = \mbox{encrypt}(priv_a, cek_i)$ and $c_i(obj) = \mbox{encrypt}(cek_i, data)$.
 
-When we want user $A$ to give permissions to the whole dataset and indexes to user $B$, he constructs a re-encryption key $r_{ab}$ such that
+When user $A$ wants to give user $B$ access to the entire dataset and indexes, he constructs a re-encryption key $r_{ab}$ such that
 the server can transform content-encryption key as $e_b(cek_i) = \mbox{transform}(r_{ab}, e_a(cek_i))$.
-Re-encryption key $r_{ab}$ is given to the server, along with revocation time.
-While the server has it, it transforms CEK's of encrypted objects $e_a(cek_i) \rightarrow e_b(cek_i)$ as client $B$ requests the objects.
-The server can revoke the key by removing $r_{ab}$ and throttle queries.
-Client $B$ is now able to do tree traversal, just as client $A$ does.
+Re-encryption key $r_{ab}$ is given to the server, along with a revocation time.
+While the server has this re-encryption key, it transforms CEK's of encrypted objects $e_a(cek_i) \rightarrow e_b(cek_i)$ as client $B$ requests the objects.
+The server can revoke the key by removing $r_{ab}$ and by throttling queries.
+Client $B$ is now able to do tree traversal, in the same manner as client $A$.
 
 \subsection{Granular access permissions}
 
-Let's first exemplify granular sharing data in a scheme when $A$ shows encryption keys to $B$ and $A$ shares $M$ objects selected by a range query.
-It is possible to share data granularly in this case in such a way that $A$ has to only send $B$ number of keys proportional to $\log{M}$ rather than $M$.
+Let us first exemplify granular sharing of data in a scheme where $A$ shows encryption keys to $B$ and $A$ shares $M$ objects selected by a range query.
+It is possible to share data granularly in such a way that $A$ has to only send $B$ number of keys proportional to $\log{M}$ rather than $M$.
 
-In order to do that, keys $k^a$ must form tree hierarchy similar to the one we had for set intersections~(\figref{fig:keytree}).
-Client $A$ traverses the tree along the beginning and the end of the range.
-It shares with $B$ keys for those buckets which give ability to do tree traversal within this range (buckets with blue background in~\figref{fig:keytree}).
+In order to do that, keys $k^a$ must form a tree hierarchy similar to the one we had for set intersections~(\figref{fig:keytree}).
+Client $A$ traverses the tree along the beginning and end of the range.
+It shares keys for those buckets with $B$ giving $B$ the ability to do tree traversal within this range (buckets with blue background in~\figref{fig:keytree}).
 However, there are buckets which are partly within the range.
-Client $A$ passes key-reference pairs for buckets which belong to the contour of the range,
-there should be no more than $2\,s_b$ such pairs where $s_b$ is maximum bucket size.
-The set of keys giving access to the in-range fraction of the index and the in-range contents of the buckets from contour of the range are given to $B$ encrypted with his public key.
+Client $A$ passes key-reference pairs for buckets which belong to the contour of the range (there should be no more than $2\,s_b$ such pairs where $s_b$ is maximum bucket size).
+The set of keys giving access to the in-range fraction of the index and the in-range contents of the buckets from contour of the range are given to $B$, encrypted with his public key.
 
-The described mechanism of sharing suffers from the fact that $B$ is given all information to decrypt objects within the range at once.
+The described sharing mechanism suffers from the fact that $B$ is given all information to decrypt objects within the range at once.
 In order to make this access revokable, we need to use proxy re-encryption.
-However, client $A$ should give hierarchical rights to re-encrypt the data to the server rather to client $B$.
+However, client $A$ should give hierarchical rights to re-encrypt the data to the server rather than to client $B$.
 E.g. the server can only re-encrypt objects within the range given a set of re-encryption keys $r_{ab}$.
-It is possible to do using a conditional proxy re-encryption scheme (C-PRE)~\cite{conditional-pre-2009,unidirectional-pre-2010,conditional-pre-2014,hierarchical-pre}.
+It is possible to do this using a conditional proxy re-encryption scheme (C-PRE)~\cite{conditional-pre-2009,unidirectional-pre-2010,conditional-pre-2014,hierarchical-pre}.
 
-Usually such encryption schemes support giving a product of multiple equality conditions.
-Conditions which we apply would be object IDs in bucket hierarchy starting from the top.
-For example C-PRE encryption of a bucket in the second layer of the tree $b_1$ would give the server ability to derive re-encryption key for all of its children $b_{1*}$.
-This gives the server ability to re-encrypt all buckets within the range specified by $A$, yet requiring $A$ to calculate only number of keys proportional to $\log$ of number of records shared.
+Usually such proxy re-encryption schemes support giving a product of multiple equality conditions.
+The conditions which we apply would be object IDs in the bucket hierarchy, starting from the top.
+For example, C-PRE encryption of a bucket in the second layer of the tree, $b_1$, would give the server ability to derive re-encryption keys for all of its children $b_{1*}$.
+This gives the server ability to re-encrypt all buckets within the range specified by $A$, yet only requires $A$ to calculate a number of keys proportional to the $\log$ of the number of records shared.
 
 \section{Security analysis}
 
