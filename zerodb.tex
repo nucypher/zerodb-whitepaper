@@ -270,6 +270,19 @@ So, we store $e_a(cek_i) = \mbox{encrypt}(priv_a, cek_i)$ and $c_i(obj) = \mbox{
 
 When we want user $A$ to give permissions to the whole dataset and indexes to user $B$, he constructs a re-encryption key $r_{ab}$ such that
 the server can transform content-encryption key as $e_b(cek_i) = \mbox{transform}(r_{ab}, e_a(cek_i))$.
+Re-encryption key $r_{ab}$ is given to the server, along with revocation time.
+While the server has it, it transforms CEK's of encrypted objects $e_a(cek_i) \rightarrow e_b(cek_i)$ as client $B$ requests the objects.
+The server can revoke the key by removing $r_{ab}$ and throttle queries.
+Client $B$ is now able to do tree traversal, just as client $A$ does.
+
+\subsection{Granular access permissions}
+
+Let's first exemplify granular sharing data in a scheme when $A$ shows encryption keys to $B$ and $A$ shares $M$ objects selected by a range query.
+It is possible to share data granularly in this case in such a way that $A$ has to only send $B$ number of keys proportional to $\log{M}$ rather than $M$.
+
+In order to do that, keys $k^a$ must form tree hierarchy similar to the one we had for set intersections~(\figref{fig:keytree}).
+
+XXX~\cite{hierarchical-pre}
 
 \section{Security analysis}
 
