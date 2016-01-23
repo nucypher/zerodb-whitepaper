@@ -369,7 +369,64 @@ The server can also assume that objects themselves (which are not stored in the 
 those can be linked to deterministically encrypted object IDs.
 ``Fake'' deterministically encrypted object IDs can help to not open numbers of elements in sub-datasets but this method still shows the equality graph to the server.
 
+We can significantly improve security guarantees by using ORAM techniques.
+They allow to hide access patterns by writing back data after reading it.
+Several algorithms are available, and most promising ones are Burst ORAM~\cite{burst-oram}
+and oblivious data structures~\cite{ods-wang-2014}.
+Still, these require to write back to the database about 20 times the amount of data read,
+but these numbers improve every year.
+It is also possible that hiding access patterns in multi-cloud or fully decentralized arrangement has quite good performance properties~\cite{oram-multicloud},
+which is especially interesting with decentralized storage layers such as Storj.io~\cite{storj} and IPFS~\cite{ipfs}.
+
 \section{Performance}
+
+\subsection{Optimizing bucket size}
+
+
+ZeroDB requires several interactions between client and server in order to return query results.
+Thus, both connection bandwidth $b$ and time of round-trip between client and server $\tau$, determine the performance of queries.
+Moreover, there is an optimal bucket size $s_b$ for any given parameters.
+
+Suppose we have an index in the form of a B-Tree of size $s_i$ bytes.
+The size of one record in the bucket is $s_r$ bytes.
+Apart from encryption one can apply compression.
+The compression rate is defined as the ratio of initial bucket size to final (compressed + encrypted) bucket size is $c$.
+The number of requests necessary to perform a query with an empty cache is equal to the height of B-Tree $h$, though we will also consider the case when we are allowed to cache up to $s_c$ bytes.
+
+
+A good approximation for B-Tree height would is~\cite{wiki:b-tree}:
+$$h = \log_m n,$$
+where $m = s_b/s_r$ is the number of records in one bucket,
+$n = s_i/s_r$ is the total number of records in the index,
+assuming the best and the worst case heights are close to each other.
+Thus:
+$$h \approx \frac{\ln s_i - \ln s_r}{\ln s_b - \ln s_r}.$$
+
+When we are allowed to use caching, we cache predominantly the top of the B-Tree with an average cached height approximately equal to the height of a B-Tree with same number of elements as the number of cached elements:
+$$h \approx \frac{\ln s_c - \ln s_r}{\ln s_b - \ln s_r}.$$
+The average number of interactions between client and server per query will be $k = h - h_c$.
+Thus, the time which this interaction takes is:
+$$\Delta t = k\tau + k\frac{s_b}{cb} =
+\left(h - h_c \right) \left( \tau + \frac{s_b}{cb} \right) =
+\frac{\ln s_i - \ln s_c}{\ln s_b - \ln s_r} \left( \tau + \frac{s_b}{cb} \right).$$
+
+We seek to make queries as fast as possible (i.e. to minimize time $\Delta t$ necessary for a query to complete) seeking for optimal bucket size $s_b$.
+The largest possible bucket size is equal to the size of the index and is obviously not efficient for sufficiently large indexes (it takes too long to download the index).
+On the other hand, when bucket size is too small, the number of requests is too large, and query performance suffers due to latency between client and server.
+An optimal compromise can be determined by equalizing first derivative to zero:
+$$\frac{\partial \Delta t}{\partial s_b} = 0$$
+which yields optimal bucket size:
+$$s_b = \frac{cb\tau}{W\left( \frac{cb\tau}{e s_r}\right)},$$
+where $W$ is real part of Lambert W function~\cite{wiki:lambert}
+and $e=2.718281828\ldots$.
+
+% re-check the numbers!
+In ZeroDB prototype, the typical size of a record in the bucket is $s_r = 30$ bytes,
+compression rate with zlib $c=4$.
+For a typical network bandwidth of $b=10^6$ (1 MB/s) and roundtrip time $\tau=0.05~\mbox{s}$, the optimal bucket size is $s_b=110kB$.
+For a typical cache size of $1$~MB (or $250$~kB when compressed) and index size of $50$~GB,
+one query using this index on average takes $t=0.3$~s and client-server exchange of $36$~kB of data (without caching that would take $0.7$~s and exchanging $80$~kB of data).
+We can finetune the optimal bucket size on the fly as the connection speed improves over time.
 
 \subsection{Unfolding trees with subtrees into one tree}
 \label{sec:unfold-trees}
