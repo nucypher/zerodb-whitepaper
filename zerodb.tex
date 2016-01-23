@@ -122,6 +122,7 @@ Making a query with ``or'' condition requires simply zip-joining two sorted data
 Instead, let us consider a query where we select objects matching the condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$.
 
 \subsubsection{Prefetch approach}
+\label{sec:prefetch}
 %    a) var1: BTree(var1 -> TreeSet(ids))
 %       var2: BTree(var2 -> TreeSet(ids))
 %       Take shorter treeset (say, for var1), fetch all ids
@@ -352,10 +353,25 @@ If we assume that probability of a given surname to appear in a given query is t
 and that keywords are distributed across queries according to Poisson distribution,
 an adversary needs to observe two keywords at least $N_1$ and $N_2$ times such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
 Amount of last names which can be revealed by a strong adversary depending in number of queries is show on~\figref{fig:surname-attack}.
+Unlike CipherBase~\cite{cipherbase}, our approach doesn't leak information about order of the elements.
+By observing access patterns, the server can only figure out which buckets are leaf nodes and which are branch nodes.
+
+In cases when we need to prefetch a large chunk of a B-Tree~(Sec.~\ref{sec:prefetch}), we immediately reveal information about the size of the sub-dataset to the server.
+Of course, this is not desirable.
+In order to make it more secure, we can download adjacent records in the same query so that the downloaded size is always approximately constant and equal to that of the largest sub-dataset.
+This way our security guarantees are similar to those of just tree traversal.
+In order for this to work we need to unfold nested trees into one tree~(Sec.~\ref{sec:unfold-trees}).
+
+Security guarantees of server-side set intersections~(Sec.~\ref{sec:server-intersection}) are weaker.
+One query leaks sum of sizes of datasets involved in the query and how many elements satisfy any $c$ conditions from the query where $1\le c\le n$, where $n$~--- number of conditions in the query.
+The server can also assume that objects themselves (which are not stored in the index) will be read after the client obtains the result of the query,
+those can be linked to deterministically encrypted object IDs.
+``Fake'' deterministically encrypted object IDs can help to not open numbers of elements in sub-datasets but this method still shows the equality graph to the server.
 
 \section{Performance}
 
 \subsection{Unfolding trees with subtrees into one tree}
+\label{sec:unfold-trees}
 
 \subsection{Benchmarks}
 
