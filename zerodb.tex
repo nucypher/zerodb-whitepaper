@@ -213,10 +213,10 @@ it does not learn which conditions the client is applying.
 
 \subsubsection{Related objects}
 
-We base on ZODB which uses object references instead of joins~\cite{zodb-references},
+ZeroDB is based on ZODB, which uses object references instead of joins~\cite{zodb-references},
 similar to mongo's database references~\cite{mongo-db-references}.
-In order to keep everything consistent, ZODB can fire events at commit time~\cite{zope-events} to keep back-references and indexes up to date.
-In ZeroDB (as in ZODB) we can create indexes on attributes of related objects, much as we create normal indexes.
+In order to keep everything consistent, ZODB fires events at commit time~\cite{zope-events} to keep back-references and indexes up to date.
+In ZeroDB (as in ZODB), we can create indexes on attributes of related objects, much as we create normal indexes.
 
 \subsection{Optimizations specific for remote client}
 
@@ -333,7 +333,7 @@ We assume that both strong and weak adversaries are passive (honest but curious)
 	\begin{center}
         \includegraphics[width=0.7\columnwidth]{surname-attack.pdf}
 	\end{center}
-    \caption{Fraction of a database of last names leaked to a passive observer depending on number of queries made to the database}
+    \caption{Fraction of a database of last names leaked to a passive observer depending on the number of queries made to the database}
 	\label{fig:surname-attack}
 \end{figure}
 
@@ -344,38 +344,38 @@ So, ZeroDB provides \emph{semantic security} against a weak adversary.
 A strong adversary, on the other hand, is able to observe access patterns and collect statistics of those over time.
 So, we provide \emph{operational security} against a strong adversary.
 
-First, we consider search queries which result just in tree traversal.
-Those could be limit orders for queries which don't involve pulling a large subset of the index to the client.
-Let's assume for simplicity that all we have in a database index is a B-Tree of surnames of customers.
-An active adversary is able to acquire statistics of accesses of the index leaf nodes when searches of, say, $10$ people with a given last name are performed.
+First, we consider search queries which just require tree traversal.
+For example, limit orders for queries which do not involve pulling a large subset of the index to the client.
+For simplicity, let's assume that all we have in a database index is a B-Tree of customer surnames.
+An active adversary is able to acquire access statistics of the index leaf nodes when searches of, say, $10$ people with a given last name are performed.
 However, the amount of statistics should be large enough to be able to distinguish different records in the database.
-If we assume that probability of a given surname to appear in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
-and that keywords are distributed across queries according to Poisson distribution,
+If we assume that probability of a given surname appearing in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
+and that keywords are distributed across queries according to a Poisson distribution,
 an adversary needs to observe two keywords at least $N_1$ and $N_2$ times such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
-Fraction of last names which can be revealed by a strong adversary from a query depending in number of queries is shown on~\figref{fig:surname-attack}.
-For example, surnames in $10\%$ of new queries can be inferred by a strong adversary after observing a million queries (which still doesn't reveal surnames not touched by queries).
-Unlike CipherBase~\cite{cipherbase}, our approach doesn't leak information about order of the elements.
+The fraction of last names which can be revealed by a strong adversary from a query given some number of queries is shown on~\figref{fig:surname-attack}.
+For example, the surnames in $10\%$ of new queries can be inferred by a strong adversary after observing a million queries (although surnames not touched by queries are not revealed).
+Unlike CipherBase~\cite{cipherbase}, our approach does not leak information about order of the elements.
 By observing access patterns, the server can only figure out which buckets are leaf nodes and which are branch nodes.
 
-In cases when we need to prefetch a large chunk of a B-Tree~(Sec.~\ref{sec:prefetch}), we immediately reveal information about the size of the sub-dataset to the server.
+In cases where we need to prefetch a large chunk of a B-Tree~(Sec.~\ref{sec:prefetch}), we immediately reveal information about the size of the sub-dataset to the server.
 Of course, this is not desirable.
-In order to make it more secure, we can download adjacent records in the same query so that the downloaded size is always approximately constant and equal to that of the largest sub-dataset.
-This way our security guarantees are similar to those of just tree traversal.
+To avoid this, we can download adjacent records in the same query so that the downloaded size is always approximately constant and equal to that of the largest sub-dataset.
+This way our security guarantees are similar to those for tree traversal.
 In order for this to work we need to unfold nested trees into one tree~(Sec.~\ref{sec:unfold-trees}).
 
-Security guarantees of server-side set intersections~(Sec.~\ref{sec:server-intersection}) are weaker.
-One query leaks sum of sizes of datasets involved in the query and how many elements satisfy any $c$ conditions from the query where $1\le c\le n$, where $n$~--- number of conditions in the query.
+The security guarantees of server-side set intersections~(Sec.~\ref{sec:server-intersection}) are weaker.
+One query leaks the sum of the sizes of the datasets involved in the query and how many elements satisfy any $c$ conditions from the query where $1\le c\le n$, where $n$~ is the number of conditions in the query.
 The server can also assume that objects themselves (which are not stored in the index) will be read after the client obtains the result of the query,
 those can be linked to deterministically encrypted object IDs.
 ``Fake'' deterministically encrypted object IDs can help to not open numbers of elements in sub-datasets but this method still shows the equality graph to the server.
 
 We can significantly improve security guarantees by using ORAM techniques.
-They allow to hide access patterns by writing back data after reading it.
-Several algorithms are available, and most promising ones are Burst ORAM~\cite{burst-oram}
+They allow us to hide access patterns by writing back data after reading it.
+Several algorithms are available, though the most promising ones are Burst ORAM~\cite{burst-oram}
 and oblivious data structures~\cite{ods-wang-2014}.
-Still, these require to write back to the database about 20 times the amount of data read,
-but these numbers improve every year.
-It is also possible that hiding access patterns in multi-cloud or fully decentralized arrangement has quite good performance properties~\cite{oram-multicloud},
+Still, these require writing back to the database about 20 times the amount of data read
+(although these numbers improve every year).
+It is also possible that hiding access patterns in a multi-cloud or fully decentralized arrangement has quite good performance properties~\cite{oram-multicloud},
 which is especially interesting with decentralized storage layers such as Storj.io~\cite{storj} and IPFS~\cite{ipfs}.
 
 \section{Performance}
