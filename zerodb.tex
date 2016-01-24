@@ -403,7 +403,7 @@ Thus:
 $$h \approx \frac{\ln s_i - \ln s_r}{\ln s_b - \ln s_r}.$$
 
 When we are allowed to use caching, we cache predominantly the top of the B-Tree with an average cached height approximately equal to the height of a B-Tree with same number of elements as the number of cached elements:
-$$h \approx \frac{\ln s_c - \ln s_r}{\ln s_b - \ln s_r}.$$
+$$h_c \approx \frac{\ln s_c - \ln s_r}{\ln s_b - \ln s_r}.$$
 The average number of interactions between client and server per query will be $k = h - h_c$.
 Thus, the time which this interaction takes is:
 $$\Delta t = k\tau + k\frac{s_b}{cb} =
@@ -420,13 +420,15 @@ $$s_b = \frac{cb\tau}{W\left( \frac{cb\tau}{e s_r}\right)},$$
 where $W$ is real part of Lambert W function~\cite{wiki:lambert}
 and $e=2.718281828\ldots$.
 
-% re-check the numbers!
-In ZeroDB prototype, the typical size of a record in the bucket is $s_r = 30$ bytes,
-compression rate with zlib $c=4$.
-For a typical network bandwidth of $b=10^6$ (1 MB/s) and roundtrip time $\tau=0.05~\mbox{s}$, the optimal bucket size is $s_b=110kB$.
-For a typical cache size of $1$~MB (or $250$~kB when compressed) and index size of $50$~GB,
-one query using this index on average takes $t=0.3$~s and client-server exchange of $36$~kB of data (without caching that would take $0.7$~s and exchanging $80$~kB of data).
+In ZeroDB, the typical size of a record in a branch bucket is $s_r = 29$ bytes,
+compression rate with zlib $c=3$.
+For a typical network bandwidth of $b=2\cdot 10^6$ (2~MB/s) and roundtrip time $\tau=0.05~\mbox{s}$, the optimal bucket size is $s_b=10$~kB when compression is not used, or $8$~kB when compression is used.
+For a typical cache size of $5$~MB and index size of $50$~GB,
+one query using this index on average takes $t=.07$~s and client-server exchange of $11$~kB of compressed data (without caching that would take $0.17$~s and exchanging $24$~kB of compressed data), reducing it down to an average of $1.3$ roundtrips.
 We can finetune the optimal bucket size on the fly as the connection speed improves over time.
+
+When we need to traverse several indexes at once, we bunch requests for several indexes in one query.
+For example, first request for indexes $A$ and $B$ would be ``read root of indexes $A$ and $B$ (by object IDs of the roots)''.
 
 \subsection{Unfolding trees with subtrees into one tree}
 \label{sec:unfold-trees}
