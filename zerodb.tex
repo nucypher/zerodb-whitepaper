@@ -429,6 +429,7 @@ We can finetune the optimal bucket size on the fly as the connection speed impro
 
 When we need to traverse several indexes at once, we bunch requests for several indexes in one query.
 For example, first request for indexes $A$ and $B$ would be ``read root of indexes $A$ and $B$ (by object IDs of the roots)''.
+That would make some of heavier queries impractical in the past but now they become practical due to internet bandwidth growing according to Nielsen's law~\cite{nielsen-law}.
 
 \subsection{Unfolding trees with subtrees into one tree}
 \label{sec:unfold-trees}
