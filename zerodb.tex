@@ -422,7 +422,7 @@ and $e=2.718281828\ldots$.
 
 In ZeroDB, the typical size of a record in a branch bucket is $s_r = 29$ bytes,
 compression rate with zlib $c=3$.
-For a typical network bandwidth of $b=2\cdot 10^6$ (2~MB/s) and roundtrip time $\tau=0.05~\mbox{s}$, the optimal bucket size is $s_b=10$~kB when compression is not used, or $8$~kB when compression is used.
+For a typical network bandwidth of $b=10^6$ (1~MB/s) and roundtrip time $\tau=0.05~\mbox{s}$, the optimal bucket size is $s_b=10$~kB when compression is not used, or $8$~kB when compression is used.
 For a typical cache size of $5$~MB and index size of $50$~GB,
 one query using this index on average takes $t=.07$~s and client-server exchange of $11$~kB of compressed data (without caching that would take $0.17$~s and exchanging $24$~kB of compressed data), reducing it down to an average of $1.3$ roundtrips.
 We can finetune the optimal bucket size on the fly as the connection speed improves over time.
