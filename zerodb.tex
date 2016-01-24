@@ -434,7 +434,15 @@ That would make some of heavier queries impractical in the past but now they bec
 \subsection{Unfolding trees with subtrees into one tree}
 \label{sec:unfold-trees}
 
-\subsection{Benchmarks}
+By default, we often use nested trees B-Trees of TreeSets.
+While it's nice for performance reasons for traditional databases, it could be not so good when working with large latencies $\tau$,
+or, more importantly, for security reasons.
+For example, one cannot easily read adjancent records to hide the size of the dataset from the server.
+
+Consider a B-Tree linking word IDs (wid) with TreeSets of object IDs (oid).
+We can instead use a treeset of tuples (wid,~oid) which will be unique.
+The tree will have approximately the same height for all wids.
+Also it is easy to pre-set approximate size of the dataset to download if we don't want to show how many oids we have per wid.
 
 \bibliography{zerodb}
 
