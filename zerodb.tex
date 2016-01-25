@@ -38,9 +38,9 @@ Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to ena
 \section{Introduction}
 
 Given the cost, performance, and scalability benefits, outsourcing of on-premise infrastructure to cloud environments is accelerating.
-However, concerns over data security and the frequency of high-profile data breaches hinder cloud adoption in highly-regulated industries, such as financial services.
-While strong encryption can alleviate many of these concerns by guaranteeing data confidentiality, once data is encrypted, it is no longer usable.
-Several strategies for computing on encrypted data have recently emerged that seek to provide the benefits of encryption while preserving the functionality of encryted data.
+However, concerns over data security and the frequency of high-profile data breaches hinder cloud adoption in highly-regulated industries such as financial services.
+While strong encryption can alleviate many of these concerns (by guaranteeing data confidentiality), once data is encrypted, it is no longer usable.
+Several strategies for computing on encrypted data have recently emerged that seek to provide the benefits of encryption while preserving the functionality of encrypted data.
 
 These techniques typically fall into two broad categories: (1) homomorphic encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries\cite{tutorial}. These two approaches can be further deconstructed into (1) fully homomorphic encryption (FHE) and partially homomorphic encryption (PHE) and (2) client-end solutions and in-cloud solutions, resulting in the taxonomy show in~\figref{fig:taxonomy}.
 
@@ -64,7 +64,7 @@ The client interacts with the server during the execution of a query over a seri
 An encrypted index is stored on the server as a B-Tree, and the client traverses this index remotely to retrieve the necessary encrypted records.
 The index consists of buckets which are encrypted before being uploaded to the server and only decrypted client-side.
 
-\subsection{Equality query (using example of keyword search)}
+\subsection{Equality query (using an example of keyword search)}
 \begin{figure}
 	\begin{center}
         \subfloat[Encrypted index traversal example (simple keyword search)]{\label{fig:tree-traversal}\includegraphics[width=0.47\columnwidth]{btree-traverse.pdf}}
@@ -113,20 +113,19 @@ One is when we want a small subset of data in the beginning of the range (limit 
 In this case, we find a pointer to the beginning of the range~\figref{fig:range-query-iter}, then incrementally fetch subsequent buckets if the range occupies more than one, then bulk-fetch objects themselves by their pointers.
 
 The other case is when we want to get \emph{all} objects in the range (select *).
-We download subsection of B-Tree matching the range query level-by-level in logarithmic number of steps in this case~\figref{fig:range-query-star}.
+We download subsection of B-Tree matching the range query level-by-level in a logarithmic number of steps as in~\figref{fig:range-query-star}.
 To do that, we start with the root bucket.
-Then, we download all the child buckets which match the range at once.
-Then all children of those buckets, repeating until we get to the leaf nodes.
+Then, we download all the child buckets which match the range at once, repeating until we get to the leaf nodes.
 After that we (optionally) bulk-fetch all the objects which match the range query at once.
 This is done in a way similar to prefetching all trees (Section~\ref{sec:bulk-fetching}).
 Selecting all objects in a range reveals the approximate number of objects in this range to the server (the range and field names remain secret).
 
 \subsection{Complex queries (multi-keyword search, multiple conditions)}
 
-So far we described simple queries.
+So far we have described simple queries.
 But queries may contain multiple conditions at the same time.
-Depending on number of objects matching each condition and desired security properties we can use different approaches.
-Making a query with ``or'' condition requires simply zip-joining two sorted datasets, so we do not consider that to be problematic.
+Depending on the number of objects matching each condition and desired security properties we can use different approaches.
+Making a query with an ``or'' condition requires simply zip-joining two sorted datasets, so we do not consider that to be problematic.
 Instead, let us consider a query where we select objects matching the condition $(v_1 = a) \,\&\, (v_2 = b)$ and ordered by $v_3$.
 
 \subsubsection{Prefetch approach}
@@ -152,9 +151,9 @@ We can use the following indexes for this kind of query:
 \end{align*}
 
 First, we estimate which condition has the smallest number of matching elements.
-We can do so by fetching ``contours'' of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine the height of the tree and approximate distance between the smallest and largest elements, knowing average size of a bucket, and it ``costs'' $H$ requests between client and server.
+We can do so by fetching ``contours'' of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine the height of the tree and approximate distance between the smallest and largest elements, knowing the average size of a bucket. This only requires $H$ requests between client and server.
 
-We prefetch a TreeSet for the most ``lightweight'' condition (Sec.~\ref{sec:bulk-fetching}).
+We prefetch a TreeSet for the most lightweight condition (Sec.~\ref{sec:bulk-fetching}).
 Then we bulk-search~(Sec.~\ref{sec:parallel-traversal}) these IDs in the larger TreeSet (and if we do not find an ID in the leaf node, we drop it).
 
 After that, we want to sort the small subset of fetched IDs by $v_3$.
@@ -198,13 +197,13 @@ For multi-keyword search for example, doing set intersections server-side would 
 Let us consider a query where $v_1=a$ and $v_2=b$.
 In order to do server-side set intersection, we reveal deterministically encrypted IDs $D(id_i)$ of all objects matching each of these conditions to the server~(\figref{fig:server-side-sets}).
 The server can see the frequency of each ID, which is equal to the number of conditions satisfied for this ID.
-The server sends those deterministically encrypted IDs which satisfy all conditions ($2$ conditions in our example) to the client.
+The server sends those deterministically encrypted IDs which satisfy all conditions (two conditions in our example) to the client.
 
 In order to do that, buckets are split into two sections~(\figref{fig:server-side-sets}~\subref{fig:keytree-branch-node},~\subref{fig:keytree-leaf-node}).
 The first (top) section is encrypted with key $k^a$, which is known to the client but never known to the server.
 The second (bottom) section is encrypted with a key $k^b_{*i}$.
 Keys from $k^b$ family are hierarchical: child-keys $k^b_{*i}$ are derived from a key$k^b_*$  which can decrypt the bottom section of a node as well as the bottom sections of all its child nodes~(\figref{fig:keytree}).
-The keys can be derived as $k^b_{*i} = \mbox{SHA256}(k^b_* + i)$, for example.
+The keys can be derived as $k^b_{*i} = \mbox{SHA256}(k^b_* + i)$.
 
 The client traverses the B-Tree along the ``contour'' of the range (red at~\figref{fig:keytree}).
 It provides keys $k^b_i$ of buckets which are fully within the range and in-range deterministically encrypted object IDs $D(id_i)$ to the server.
@@ -215,20 +214,19 @@ Values which are repeated the same number of times as the number of conditions i
 In this case, the server can determine the total number of records matching any of the given conditions $n_1$ (the conditions themselves are unknown to the server),
 the number of records matching exactly two of the conditions $n_2$,
 etc. until the maximum number of conditions.
-The server also learns ``parent-child'' relationships between some of buckets.
-The server does not learn the order of the objects,
-it does not learn which conditions the client is applying.
+The server also learns ``parent-child'' relationships between some of the buckets.
+The server does not learn the order of the objects and it does not learn which conditions the client is applying.
 
 \subsubsection{Related objects}
 
 ZeroDB is based on ZODB, which uses object references instead of joins~\cite{zodb-references},
-similar to mongo's database references~\cite{mongo-db-references}.
+similar to MongoDB's database references~\cite{mongo-db-references}.
 In order to keep everything consistent, ZODB fires events at commit time~\cite{zope-events} to keep back-references and indexes up to date.
 In ZeroDB (as in ZODB), we can create indexes on attributes of related objects, much as we create normal indexes.
 
 \subsection{Optimizations specific for remote client}
 
-In most cases, all the query logic in ZeroDB happens client-side, e.g. client and storage are separated by a network channel with high latency.
+In most cases, all the query logic in ZeroDB happens client-side (e.g. client and storage are separated by a network channel with high latency).
 Therefore, we use two primitives specific for this architecture.
 
 \begin{figure}
@@ -237,7 +235,7 @@ Therefore, we use two primitives specific for this architecture.
         \qquad
         \subfloat[When multiple branches of the tree needs reading/updating, tree traversal can be done in parallel]{\label{fig:parallel-traversal}\includegraphics[width=0.47\columnwidth]{parallel-traversal.pdf}}
 	\end{center}
-    \caption{ZeroDB-specific optimizations of working with B-Trees. Allows to pre-fetch a tree or find multiple values in number of steps equal to the tree height}
+    \caption{ZeroDB-specific optimizations for working with B-Trees includ pre-fetching a tree or finding multiple values in a number of steps equal to the tree height}
 	\label{fig:tree-traversal-optimizations}
 \end{figure}
 
@@ -298,16 +296,16 @@ Client $B$ is now able to do tree traversal, in the same manner as client $A$.
 \subsection{Granular access permissions}
 
 Let us first exemplify granular sharing of data in a scheme where $A$ shows encryption keys to $B$ and $A$ shares $M$ objects selected by a range query.
-It is possible to share data granularly in such a way that $A$ has to only send $B$ number of keys proportional to $\log{M}$ rather than $M$.
+It is possible to share data granularly in such a way that $A$ has to only send $B$ a number of keys proportional to $\log{M}$ rather than $M$.
 
 In order to do that, keys $k^a$ must form a tree hierarchy similar to the one we had for set intersections~(\figref{fig:keytree}).
 Client $A$ traverses the tree along the beginning and end of the range.
 It shares keys for those buckets with $B$ giving $B$ the ability to do tree traversal within this range (buckets with blue background in~\figref{fig:keytree}).
-However, there are buckets which are partly within the range.
-Client $A$ passes key-reference pairs for buckets which belong to the contour of the range (there should be no more than $2\,s_b$ such pairs where $s_b$ is maximum bucket size).
+However, there may be buckets which are partly within the range.
+Client $A$ passes key-reference pairs for buckets which belong to the contour of the range (there should be no more than $2\,s_b$ such pairs, where $s_b$ is the maximum bucket size).
 The set of keys giving access to the in-range fraction of the index and the in-range contents of the buckets from contour of the range are given to $B$, encrypted with his public key.
 
-The described sharing mechanism suffers from the fact that $B$ is given all information to decrypt objects within the range at once.
+The described sharing mechanism suffers from the fact that $B$ is given all the information to decrypt objects within the range at once.
 In order to make this access revokable, we need to use proxy re-encryption.
 However, client $A$ should give hierarchical rights to re-encrypt the data to the server rather than to client $B$.
 E.g. the server can only re-encrypt objects within the range given a set of re-encryption keys $r_{ab}$.
@@ -315,7 +313,7 @@ It is possible to do this using a conditional proxy re-encryption scheme (C-PRE)
 
 Usually such proxy re-encryption schemes support giving a product of multiple equality conditions.
 The conditions which we apply would be object IDs in the bucket hierarchy, starting from the top.
-For example, C-PRE encryption of a bucket in the second layer of the tree, $b_1$, would give the server ability to derive re-encryption keys for all of its children $b_{1*}$.
+For example, C-PRE encryption of a bucket in the second layer of the tree, $b_1$, would give the server ability to derive re-encryption keys for all of its children, $b_{1*}$.
 This gives the server ability to re-encrypt all buckets within the range specified by $A$, yet only requires $A$ to calculate a number of keys proportional to the $\log$ of the number of records shared.
 
 \section{Security analysis}
@@ -359,10 +357,10 @@ An active adversary is able to acquire access statistics of the index leaf nodes
 However, the amount of statistics should be large enough to be able to distinguish different records in the database.
 If we assume that probability of a given surname appearing in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
 and that keywords are distributed across queries according to a Poisson distribution,
-an adversary needs to observe two keywords at least $N_1$ and $N_2$ times such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
+an adversary needs to observe two keywords at least $N_1$ and $N_2$ times, such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
 The fraction of last names which can be revealed by a strong adversary from a query given some number of queries is shown on~\figref{fig:surname-attack}.
 For example, the surnames in $10\%$ of new queries can be inferred by a strong adversary after observing a million queries (although surnames not touched by queries are not revealed).
-Unlike CipherBase~\cite{cipherbase}, our approach does not leak information about order of the elements.
+Unlike CipherBase~\cite{cipherbase}, our approach does not leak information about the order of the elements.
 By observing access patterns, the server can only figure out which buckets are leaf nodes and which are branch nodes.
 
 In cases where we need to prefetch a large chunk of a B-Tree~(Sec.~\ref{sec:prefetch}), we immediately reveal information about the size of the sub-dataset to the server.
@@ -375,7 +373,7 @@ The security guarantees of server-side set intersections~(Sec.~\ref{sec:server-i
 One query leaks the sum of the sizes of the datasets involved in the query and how many elements satisfy any $c$ conditions from the query where $1\le c\le n$, where $n$~ is the number of conditions in the query.
 The server can also assume that objects themselves (which are not stored in the index) will be read after the client obtains the result of the query,
 those can be linked to deterministically encrypted object IDs.
-``Fake'' deterministically encrypted object IDs can help to not open numbers of elements in sub-datasets but this method still shows the equality graph to the server.
+``Fake'' deterministically encrypted object IDs can help to not open the number of elements in sub-datasets, but this method still shows the equality graph to the server.
 
 We can significantly improve security guarantees by using ORAM techniques.
 They allow us to hide access patterns by writing back data after reading it.
@@ -402,7 +400,7 @@ The compression rate is defined as the ratio of initial bucket size to final (co
 The number of requests necessary to perform a query with an empty cache is equal to the height of B-Tree $h$, though we will also consider the case when we are allowed to cache up to $s_c$ bytes.
 
 
-A good approximation for B-Tree height would is~\cite{wiki:b-tree}:
+A good approximation for B-Tree height is~\cite{wiki:b-tree}:
 $$h = \log_m n,$$
 where $m = s_b/s_r$ is the number of records in one bucket,
 $n = s_i/s_r$ is the total number of records in the index,
@@ -418,39 +416,39 @@ $$\Delta t = k\tau + k\frac{s_b}{cb} =
 \left(h - h_c \right) \left( \tau + \frac{s_b}{cb} \right) =
 \frac{\ln s_i - \ln s_c}{\ln s_b - \ln s_r} \left( \tau + \frac{s_b}{cb} \right).$$
 
-We seek to make queries as fast as possible (i.e. to minimize time $\Delta t$ necessary for a query to complete) seeking for optimal bucket size $s_b$.
+We seek to make queries as fast as possible (i.e. to minimize time $\Delta t$ necessary for a query to complete) seeking for the optimal bucket size, $s_b$.
 The largest possible bucket size is equal to the size of the index and is obviously not efficient for sufficiently large indexes (it takes too long to download the index).
-On the other hand, when bucket size is too small, the number of requests is too large, and query performance suffers due to latency between client and server.
-An optimal compromise can be determined by equalizing first derivative to zero:
+On the other hand, when bucket size is too small, the number of requests is too large and query performance suffers due to latency between client and server.
+An optimal compromise can be determined by equalizing the first derivative to zero:
 $$\frac{\partial \Delta t}{\partial s_b} = 0$$
-which yields optimal bucket size:
+which yields the optimal bucket size:
 $$s_b = \frac{cb\tau}{W\left( \frac{cb\tau}{e s_r}\right)},$$
-where $W$ is real part of Lambert W function~\cite{wiki:lambert}
+where $W$ is the real part of Lambert W function~\cite{wiki:lambert}
 and $e=2.718281828\ldots$.
 
 In ZeroDB, the typical size of a record in a branch bucket is $s_r = 29$ bytes,
 compression rate with zlib $c=3$.
 For a typical network bandwidth of $b=10^6$ (1~MB/s) and roundtrip time $\tau=0.05~\mbox{s}$, the optimal bucket size is $s_b=10$~kB when compression is not used, or $8$~kB when compression is used.
 For a typical cache size of $5$~MB and index size of $50$~GB,
-one query using this index on average takes $t=.07$~s and client-server exchange of $11$~kB of compressed data (without caching that would take $0.17$~s and exchanging $24$~kB of compressed data), reducing it down to an average of $1.3$ roundtrips.
+one query using this index on average takes $t=.07$~s and client-server exchange of $11$~kB of compressed data (without caching that would take $0.17$~s and exchanging $24$~kB of compressed data), reducing it to an average of $1.3$ roundtrips.
 We can finetune the optimal bucket size on the fly as the connection speed improves over time.
 
 When we need to traverse several indexes at once, we bunch requests for several indexes in one query.
-For example, first request for indexes $A$ and $B$ would be ``read root of indexes $A$ and $B$ (by object IDs of the roots)''.
-That would make some of heavier queries impractical in the past but now they become practical due to internet bandwidth growing according to Nielsen's law~\cite{nielsen-law}.
+For example, the first request for indexes $A$ and $B$ would be ``read root of indexes $A$ and $B$ (by object IDs of the roots)''.
+In the past, that would make some heavier queries impractical, but the growth in internet bandwidth according to Nielsen's law~\cite{nielsen-law} alleviates this.
 
 \subsection{Unfolding trees with subtrees into one tree}
 \label{sec:unfold-trees}
 
 By default, we often use nested trees B-Trees of TreeSets.
-While it's nice for performance reasons for traditional databases, it could be not so good when working with large latencies $\tau$,
-or, more importantly, for security reasons.
-For example, one cannot easily read adjancent records to hide the size of the dataset from the server.
+While that yields performance benefits in traditional databases, it is not ideal when working with large latencies, $\tau$.
+And, more importantly, it has security drawbacks.
+For example, one cannot easily read adjacent records to hide the size of the dataset from the server.
 
-Consider a B-Tree linking word IDs (wid) with TreeSets of object IDs (oid).
+Consider a B-Tree linking word IDs, $wid$, with TreeSets of object IDs, $oid$.
 We can instead use a treeset of tuples (wid,~oid) which will be unique.
-The tree will have approximately the same height for all wids.
-Also it is easy to pre-set approximate size of the dataset to download if we don't want to show how many oids we have per wid.
+The tree will have approximately the same height for all $wid$s.
+Also, it is easy to pre-set the approximate size of the dataset to download if we don't want to show how many $oid$s we have per $wid$.
 
 \bibliography{zerodb}
 
