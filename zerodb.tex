@@ -453,14 +453,14 @@ Also, it is easy to pre-set the approximate size of the dataset to download if w
 
 \section{Cryptographic primitives used}
 
-Even though the server never decrypts the data, we use encryption in transit using SSL in order to prevent third parties from analyzing access patterns.
-Client authenticates with a X.509 certificate or a self-signed certificate where private key is derived from a passphrase.
-When a passphrase is used, scrypt algorithm is used to derive private key from the passphrase, information about salt is stored server-side and is given before establishing authenticated encrypted connection.
+Even though the server never decrypts the data, we use encryption in transit (using SSL) in order to prevent third parties from analyzing access patterns.
+The client authenticates with an X.509 certificate or a self-signed certificate where the private key is derived from a passphrase.
+When a passphrase is used, the scrypt algorithm is used to derive a private key from the passphrase. Information about the salt is stored server-side and is given before establishing an authenticated encrypted connection.
 
 For symmetric encryption, we use AES256 in GCM mode.
-The symmetric key is derived from either the passphrase, or private key in X.509 certificate.
+The symmetric key is derived from either the passphrase, or the private key in an X.509 certificate.
 
-If proxy re-encryption is chosen, we use AFGH algorithm~\cite{afgh} to encrypt a random content key for AES256 block cipher in GCM mode.
+If proxy re-encryption is used, we use the AFGH algorithm~\cite{afgh} to encrypt a random content key for an AES256 block cipher in GCM mode.
 
 \bibliography{zerodb}
 
