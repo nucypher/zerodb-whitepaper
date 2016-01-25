@@ -451,6 +451,17 @@ We can instead use a treeset of tuples (wid,~oid) which will be unique.
 The tree will have approximately the same height for all $wid$s.
 Also, it is easy to pre-set the approximate size of the dataset to download if we don't want to show how many $oid$s we have per $wid$.
 
+\section{Cryptographic primitives used}
+
+Even though the server never decrypts the data, we use encryption in transit using SSL in order to prevent third parties from analyzing access patterns.
+Client authenticates with a X.509 certificate or a self-signed certificate where private key is derived from a passphrase.
+When a passphrase is used, scrypt algorithm is used to derive private key from the passphrase, information about salt is stored server-side and is given before establishing authenticated encrypted connection.
+
+For symmetric encryption, we use AES256 in GCM mode.
+The symmetric key is derived from either the passphrase, or private key in X.509 certificate.
+
+If proxy re-encryption is chosen, we use AFGH algorithm~\cite{afgh} to encrypt a random content key for AES256 block cipher in GCM mode.
+
 \bibliography{zerodb}
 
 \end{document}
