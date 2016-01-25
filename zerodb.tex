@@ -54,7 +54,9 @@ These techniques typically fall into two broad categories: (1) homomorphic encry
 	\label{fig:taxonomy}
 \end{figure}
 
-Review of existing systems needed:~\cite{cipherbase}~\cite{cryptdb}~\cite{gentry}~\cite{smart}
+The most high-profile of these include Gentry's seminal paper on homomorphic encrytion~\cite{gentry}, Popa's CryptDB~\cite{cipherbase}, which executes SQL queries
+over encrypted data using a collection of efficient SQL-aware encryption schemes~\cite{cryptdb}, and Cipherbase, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
+Smart provides a more comprehensive overview of the latest research and private sector efforts to achieve data encrypted in-use~\cite{smart}.
 
 
 \section{Query protocol}
@@ -371,8 +373,7 @@ In order for this to work we need to unfold nested trees into one tree~(Sec.~\re
 
 The security guarantees of server-side set intersections~(Sec.~\ref{sec:server-intersection}) are weaker.
 One query leaks the sum of the sizes of the datasets involved in the query and how many elements satisfy any $c$ conditions from the query where $1\le c\le n$, where $n$~ is the number of conditions in the query.
-The server can also assume that objects themselves (which are not stored in the index) will be read after the client obtains the result of the query,
-those can be linked to deterministically encrypted object IDs.
+The server can also assume that objects themselves (which are not stored in the index) will be read after the client obtains the result of the query and those can then be linked to deterministically encrypted object IDs.
 ``Fake'' deterministically encrypted object IDs can help to not open the number of elements in sub-datasets, but this method still shows the equality graph to the server.
 
 We can significantly improve security guarantees by using ORAM techniques.
@@ -440,7 +441,7 @@ In the past, that would make some heavier queries impractical, but the growth in
 \subsection{Unfolding trees with subtrees into one tree}
 \label{sec:unfold-trees}
 
-By default, we often use nested trees B-Trees of TreeSets.
+By default, we often use nested B-Trees of TreeSets.
 While that yields performance benefits in traditional databases, it is not ideal when working with large latencies, $\tau$.
 And, more importantly, it has security drawbacks.
 For example, one cannot easily read adjacent records to hide the size of the dataset from the server.
