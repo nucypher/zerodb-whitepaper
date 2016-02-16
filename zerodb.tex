@@ -78,8 +78,8 @@ The index consists of buckets which are encrypted before being uploaded to the s
 	\label{fig:btree-protocol}
 \end{figure}
 
-In ZeroDB, indexes are structured as B-Trees~\figref{fig:tree-traversal}.
-A B-Tree consists of buckets, each of which can be either a root, branch, or leaf node.
+In ZeroDB, indexes are structured as encrypted B-Trees~\figref{fig:tree-traversal}.
+A B-Tree consists of encrypted buckets, each of which can be either a root, branch, or leaf node.
 The leaf nodes of a tree point to the actual objects being stored.
 Thus, searching the database is a simple tree traversal.
 
@@ -90,7 +90,10 @@ As a result, the server does not know how individual objects are organized withi
 Since ZeroDB is encryption agnostic, probabilistic encryption can be used so that the server cannot even compare objects for equality.
 
 When a client performs a query, it asks the server to return buckets of the tree as it traverses the index remotely~\figref{fig:communication}.
+The client decrypts buckets in order to figure out which buckets to fetch next.
 Buckets can be cached client-side so that subsequent queries do not make unnecessary network calls.
+In this process, the server which observes a search pattern can infer which which level of the tree buckets belong to,
+however it cannot figure out ordering of elements as it cannot see which link from the bucket was used.
 
 The server is responsible for data replication, multi-version concurrency, object locking, user authentication, quotas, etc.
 The client performs encryption/decryption and query logic.
