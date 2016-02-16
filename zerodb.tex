@@ -94,6 +94,8 @@ Buckets can be cached client-side so that subsequent queries do not make unneces
 
 The server is responsible for data replication, multi-version concurrency, object locking, user authentication, quotas, etc.
 The client performs encryption/decryption and query logic.
+In other words, if the server maliciously gives data of user Alice to user Eve, for example,
+Eve will not be able to decrypt the obtained data anyway.
 
 \subsection{Range queries}
 
