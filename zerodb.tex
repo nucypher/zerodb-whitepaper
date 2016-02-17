@@ -128,7 +128,7 @@ After that we (optionally) bulk-fetch all the objects which match the range quer
 This is done in a way similar to prefetching all trees (Section~\ref{sec:bulk-fetching}).
 Selecting all objects in a range reveals the approximate number of objects in this range to the server (the range and field names remain secret).
 
-\subsection{Complex queries (multi-keyword search, multiple conditions)}
+\subsection{Complex queries (multi-keyword search, multiple conditions)}  % XXX
 
 So far we have described simple queries.
 But queries may contain multiple conditions at the same time.
@@ -149,7 +149,6 @@ Instead, let us consider a query where we select objects matching the condition 
 %       Cons: very strong hint about how large the dataset is (unless reading more data than actually need), bad performance if words have ~same weights
 
 In case the number of items with $v_1=a$ is small, it could be worthwhile to download the entire subset of object IDs matching this condition.
-This could be practical in a multi-keyword search when one word is rare.
 
 We can use the following indexes for this kind of query:
 \begin{align*}
@@ -182,8 +181,45 @@ The composite index to make a query selecting objects matching the condition $(v
 For this query, we find a B-Tree (or multiple B-Trees) corresponding to the conditions and lazily traverse them in order of $v_3$.
 This makes limit orders much more performant and does not leak information about possible dataset size to the server.
 
+\subsection{Incremental full-text search}
+
+Full-text search with keywords $t_1, t_2,\ldots, t_n$ requires to order results by net scores of documents relative to these keywords.
+One rarely needs all the matching documents at once, and the result is almost always sorted by the score.
+That makes it possible to do in incremental, pre-ordered manner, even though the score depends on the query.
+
+Okapi BM25~\cite{wiki:OkapiBM25} is considered to be a state-of-art ranking function.
+However, when it comes to scalability, it doesn't work well because term frequency TF in its definition depends on both length of a document
+and mean length of a document in a database.
+It makes it impossible to pre-compute score even for one keyword $t$ without necessity to fetch individual numbers of occurrences of $t$
+in all documents where it appears.
+Instead, we use Lucene's practical scoring function~\cite{lucene-practical-scoring}.
+
+In a simple form, the score is determined as following.
+For a term $t$ and document $D$:
+$$TF(t, D) = \sqrt{f(t, D)},$$
+where $f(t, D)$~--- number of occurrences of $t$ in $D$.
+$$IDF(t) = 1 + \ln\left( \frac{N_{docs}}{N_{docs}(t) + 1} \right),$$
+where $N_{docs}$ is total number of text documents indexed, $N_{docs}(t)$ is number of documents which contain term $t$.
+Values of $N_{docs}$ and $N_{docs}(t)$ are stored in encrypted form and updated when new documents are added.
+For easy conflict resolution, these values can be encrypted using additively homomorphic encryption (Pailier or exponential ElGamal).
+% XXX let's mention Pailier/ElGamal separately for Length() property
+Score of a document for one term $t$ will be:
+$$s(t, D) = \frac{TF(t, D) \cdot IDF(t)^2}{\sqrt{|D|}},$$
+where $|D|$ is total number of unique terms in document $D$.
+$TF(t,D)/\sqrt{|D|}$ is calculated at indexing time, $IDF$ is calculated at query time since IDF doesn't depend on $D$.
+This, for one-keyword queries documents are already pre-ordered by relevancy.
+
+Total document weight is defined as:
+$$s(D) = \frac{\sum_{i=0}^n s(t_i, D)}{\sqrt{\sum IDF(t_i)^2}}$$.
+This results into having to sum up scores $TF(t,D)/\sqrt{|D|}$ which document references are pre-ordered by (in a descending order)
+with weights of $IDF^2/\sqrt{\sum IDF}$ calculated at query time.
+
+% TBC
+
 \subsubsection{Doing set intersection server-side}
 \label{sec:server-intersection}
+% XXX TO REMOVE: we'll not do this. Too insecure.
+% Concept of tree of keys is still useful, will copy to the sharing section
 
 \begin{figure}
 	\begin{center}
