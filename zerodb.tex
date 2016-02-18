@@ -26,8 +26,8 @@
 ZeroDB is an end-to-end encrypted database that enables clients to operate on (search, sort, query, and share) encrypted data without exposing encryption keys or cleartext data to the database server.
 The familiar client-server architecture remains, but query logic and encryption keys are pushed client-side.
 Since the server has no insight into the nature of the data, the risk of data being exposed after a server-side data breach is eliminated.
-Even if successfully infiltrated the server, passive adversaries would not have access to the cleartext data and
-could not derive anything useful out of obtained disk or RAM snapshots.
+Even if the server is successfully infiltrated, passive adversaries would not have access to the cleartext data and
+cannot derive anything useful out of disk or RAM snapshots.
 
 ZeroDB provides end-to-end encryption while maintaining much of the functionality expected of a modern database, such as full-text search, sort, and range queries.
 Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to enable secure, granular sharing of encrypted data without exposing keys to the server and without sharing the same encryption key between all users of the database.
@@ -43,7 +43,7 @@ However, concerns over data security and the frequency of high-profile data brea
 While strong encryption can alleviate many of these concerns (by guaranteeing data confidentiality), once data is encrypted, it is no longer usable.
 Several strategies for computing on encrypted data have recently emerged that seek to provide the benefits of encryption while preserving the functionality of encrypted data.
 
-These techniques typically fall into two broad categories: (1) homomorphic encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries~\cite{tutorial}. These two approaches can be further deconstructed into (1) fully homomorphic encryption (FHE) and partially homomorphic encryption (PHE) and (2) client-end solutions and in-cloud solutions, resulting in the taxonomy show in~\figref{fig:taxonomy}.
+These techniques typically fall into two broad categories: (1) encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries~\cite{tutorial}. These two approaches can be further deconstructed into (1) searchable symmetric encryption (SSE), secure multi-party computation (MPC), and fully and partially homomorphic encryption (FHE and PHE, respectively) and (2) client-end solutions and in-cloud solutions, resulting in the taxonomy shown in~\figref{fig:taxonomy}.
 
 \begin{figure}
 	\begin{center}
@@ -55,14 +55,14 @@ These techniques typically fall into two broad categories: (1) homomorphic encry
 	\label{fig:taxonomy}
 \end{figure}
 
-The most high-profile of these include Gentry's seminal paper on homomorphic encrytion~\cite{gentry}, Popa's CryptDB~\cite{cipherbase}, which executes SQL queries
-over encrypted data using a collection of efficient SQL-aware encryption schemes~\cite{cryptdb}, and Cipherbase, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
+Notable works in this area include Gentry's seminal paper on homomorphic encrytion~\cite{gentry}, Popa's CryptDB~\cite{cryptdb}, which executes SQL queries
+over encrypted data using a collection of efficient SQL-aware encryption schemes, Dynamic Searchable Symmetric Encryption~\cite{dynamicsse}, and Cipherbase~\cite{cryptdb}, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
 Smart provides a more comprehensive overview of the latest research and private sector efforts to achieve data encrypted in-use~\cite{smart}.
 
 
 \section{Query protocol}
 
-The basis of the end-to-end encrypted query protocol is as follows.
+The basis of ZeroDB's end-to-end encrypted query protocol is as follows.
 The client interacts with the server during the execution of a query over a series of round trips.
 An encrypted index is stored on the server as a B-Tree, and the client traverses this index remotely to retrieve the necessary encrypted records.
 The index consists of buckets which are encrypted before being uploaded to the server and only decrypted client-side.
@@ -87,17 +87,17 @@ In order to make the database end-to-end encrypted yet still capable of performi
 The server, which stores the buckets, never knows the encryption key used.
 The objects referenced by the leaf nodes of the B-Tree indexes are also encrypted client-side.
 As a result, the server does not know how individual objects are organized within the B-Tree or whether they even belong to an index at all.
-Since ZeroDB is encryption agnostic, probabilistic encryption can be used so that the server cannot even compare objects for equality.
+Since ZeroDB is encryption agnostic, probabilistic encryption can be used so that the server cannot compare objects for equality.
 
-When a client performs a query, it asks the server to return buckets of the tree as it traverses the index remotely~\figref{fig:communication}.
+When a client performs a query, it asks the server to return buckets of the tree as it traverses the index remotely, as in~\figref{fig:communication}.
 The client decrypts buckets in order to figure out which buckets to fetch next.
-Buckets can be cached client-side so that subsequent queries do not make unnecessary network calls.
-In this process, the server which observes a search pattern can infer which which level of the tree buckets belong to,
-however it cannot figure out ordering of elements as it cannot see which link from the bucket was used.
+Frequently accessed buckets can be cached client-side so that subsequent queries do not make unnecessary network calls.
+The server can infer which level of the tree buckets belong to by observing search patterns,
+however it cannot figure out the ordering of elements as it cannot see which link from the bucket was used.
 
 The server is responsible for data replication, multi-version concurrency, object locking, user authentication, quotas, etc.
 The client performs encryption/decryption and query logic.
-In other words, if the server maliciously gives data of user Alice to user Eve, for example,
+In other words, if the server maliciously gives data belonging to user Alice to user Eve,
 Eve will not be able to decrypt the obtained data anyway.
 
 \subsection{Range queries}
@@ -113,15 +113,15 @@ Eve will not be able to decrypt the obtained data anyway.
 \end{figure}
 
 When data are organized in B-Trees, doing range queries is easy.
-Take an example having records \emph{Record} with an integer property \emph{weight}.
+Take an example having records, \emph{Record}, with an integer property, \emph{weight}.
 Data pointers to \emph{Record} objects are placed in a B-Tree sorted by \emph{weight}.
 
 Two different types of range queries could be performed.
 One is when we want a small subset of data in the beginning of the range (limit query).
-In this case, we find a pointer to the beginning of the range~\figref{fig:range-query-iter}, then incrementally fetch subsequent buckets if the range occupies more than one, then bulk-fetch objects themselves by their pointers.
+In this case, we find a pointer to the beginning of the range as in~\figref{fig:range-query-iter}, then we incrementally fetch subsequent buckets if the range occupies more than one, then bulk-fetch objects themselves by their pointers.
 
-The other case is when we want to get \emph{all} objects in the range (select *).
-We download subsection of B-Tree matching the range query level-by-level in a logarithmic number of steps as in~\figref{fig:range-query-star}.
+The other case is when we want to get \emph{all} objects in a range (select *).
+We download the subsection of the B-Tree matching the range query level-by-level in a logarithmic number of steps as in~\figref{fig:range-query-star}.
 To do that, we start with the root bucket.
 Then, we download all the child buckets which match the range at once, repeating until we get to the leaf nodes.
 After that we (optionally) bulk-fetch all the objects which match the range query at once.
@@ -158,7 +158,7 @@ We can use the following indexes for this kind of query:
 \end{align*}
 
 First, we estimate which condition has the smallest number of matching elements.
-We can do so by fetching ``contours'' of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine the height of the tree and approximate distance between the smallest and largest elements, knowing the average size of a bucket. This only requires $H$ requests between client and server.
+We can do so by fetching contours of the B-Trees (corresponding to smallest and largest elements of the range respectively) in order to determine the height of the tree and approximate distance between the smallest and largest elements, knowing the average size of a bucket. This only requires $H$ requests between client and server.
 
 We prefetch a TreeSet for the most lightweight condition (Sec.~\ref{sec:bulk-fetching}).
 Then we bulk-search~(Sec.~\ref{sec:parallel-traversal}) these IDs in the larger TreeSet (and if we do not find an ID in the leaf node, we drop it).
@@ -183,36 +183,36 @@ This makes limit orders much more performant and does not leak information about
 
 \subsection{Incremental full-text search}
 
-Full-text search with keywords $t_1, t_2,\ldots, t_n$ requires to order results by net scores of documents relative to these keywords.
+Full-text search with keywords $t_1, t_2,\ldots, t_n$ requires ordering results by net scores of the documents relative to these keywords.
 One rarely needs all the matching documents at once, and the result is almost always sorted by the score.
-That makes it possible to do in incremental, pre-ordered manner, even though the score depends on the query.
+That makes it possible to do the search in an incremental, pre-ordered manner, despite the score depending on the query.
 
 Okapi BM25~\cite{wiki:OkapiBM25} is considered to be a state-of-art ranking function.
-However, when it comes to scalability, it doesn't work well because term frequency TF in its definition depends on both length of a document
-and mean length of a document in a database.
-It makes it impossible to pre-compute score even for one keyword $t$ without necessity to fetch individual numbers of occurrences of $t$
-in all documents where it appears.
+However, when it comes to scalability, it doesn't work well because term frequency (TF) depends on both the length of a document
+and the mean length of a document in the database.
+This makes it impossible to pre-compute a score even for one keyword, $t$, without having to fetch the individual numbers of occurrences of $t$
+in all the documents where it appears.
 Instead, we use Lucene's practical scoring function~\cite{lucene-practical-scoring}.
 
-In a simple form, the score is determined as following.
-For a term $t$ and document $D$:
+In a simple form, the score is determined as follows.
+For a term, $t$, and document, $D$:
 $$TF(t, D) = \sqrt{f(t, D)},$$
-where $f(t, D)$~--- number of occurrences of $t$ in $D$.
+where $f(t, D)$~is the number of occurrences of $t$ in $D$.
 $$IDF(t) = 1 + \ln\left( \frac{N_{docs}}{N_{docs}(t) + 1} \right),$$
-where $N_{docs}$ is total number of text documents indexed, $N_{docs}(t)$ is number of documents which contain term $t$.
-Values of $N_{docs}$ and $N_{docs}(t)$ are stored in encrypted form and updated when new documents are added.
+where $N_{docs}$ is the total number of text documents indexed and $N_{docs}(t)$ is the number of documents which contain term $t$.
+The values of $N_{docs}$ and $N_{docs}(t)$ are stored in an encrypted form and updated when new documents are added.
 For easy conflict resolution, these values can be encrypted using additively homomorphic encryption (Pailier or exponential ElGamal).
 % XXX let's mention Pailier/ElGamal separately for Length() property
-Score of a document for one term $t$ will be:
+The score of a document for one term, $t$, will be:
 $$s(t, D) = \frac{TF(t, D) \cdot IDF(t)^2}{\sqrt{|D|}},$$
 where $|D|$ is total number of unique terms in document $D$.
-$TF(t,D)/\sqrt{|D|}$ is calculated at indexing time, $IDF$ is calculated at query time since IDF doesn't depend on $D$.
-This, for one-keyword queries documents are already pre-ordered by relevancy.
+$TF(t,D)/\sqrt{|D|}$ is calculated at indexing time, $IDF$ is calculated at query time since it doesn't depend on $D$.
+Thus, for one-keyword queries, documents are pre-ordered by relevancy.
 
 Total document weight is defined as:
-$$s(D) = \frac{\sum_{i=0}^n s(t_i, D)}{\sqrt{\sum IDF(t_i)^2}}$$.
-This results into having to sum up scores $TF(t,D)/\sqrt{|D|}$ which document references are pre-ordered by (in a descending order)
-with weights of $IDF^2/\sqrt{\sum IDF}$ calculated at query time.
+$$s(D) = \frac{\sum_{i=0}^n s(t_i, D)}{\sqrt{\sum IDF(t_i)^2}}$$
+This results in having to sum up the scores, $TF(t,D)/\sqrt{|D|}$, by which document references are pre-ordered (in descending order)
+with weights, $IDF^2/\sqrt{\sum IDF}$, calculated at query time.
 
 In order to produce docids sorted by $s$ incrementally, we first tuples $(s_j(t_i, D), docid_j)$ with highest values of $s$ for all the query terms $t_i$.
 Then we calculate possible ranges of document scores, given our knowledge of highest known scores for terms $t_i$ and scores for particular $docids$ which we've read.
@@ -228,8 +228,8 @@ It is efficient when document weights for different keywords are significantly d
 
 \subsubsection{Related objects}
 
-ZeroDB is based on ZODB, which uses object references instead of joins~\cite{zodb-references},
-similar to MongoDB's database references~\cite{mongo-db-references}.
+ZeroDB is based on ZODB, which uses object references instead of joins~\cite{zodb-references}
+(similar to MongoDB's database references~\cite{mongo-db-references}).
 In order to keep everything consistent, ZODB fires events at commit time~\cite{zope-events} to keep back-references and indexes up to date.
 In ZeroDB (as in ZODB), we can create indexes on attributes of related objects, much as we create normal indexes.
 
