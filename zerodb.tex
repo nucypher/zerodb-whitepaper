@@ -281,6 +281,9 @@ When we do parallel traversal, the server would be able to see access patterns b
 
 \section{Sharing data}
 
+It is often advantageous to share a dataset (for data analysis by third parties,
+or just to give a temporary ability to query the data to employees or regulators).
+
 If there are multiple users of the same encrypted dataset, there are serious shortcomings with sharing the encryption key with all parties.
 Since the architecture of ZeroDB allows using any encryption algorithm, we can use proxy re-encryption~\cite{afgh,libert2011unidirectional}
 or delta-keys~\cite{delta-keys,mylar} to share data with other users (third parties) of the same dataset.
@@ -319,9 +322,8 @@ It is possible to share data granularly in such a way that $A$ has to only send 
     \label{fig:keytree}
 \end{figure}
 
-% XXX
 In order to do that, keys $k^a$ must form a tree hierarchy~(\figref{fig:keytree}).
-Each node of a tree has a key associated with it.
+Each node of a B-Tree has a key associated with it.
 Keys for child nodes $k_{*i}$ are derived from a key for the parent node $k_*$.
 The keys can be derived as $k_{*i} = \mbox{SHA256}(k_* + i)$.
 Client $A$ traverses the tree along the beginning and end of the range.
