@@ -13,8 +13,8 @@
    height="502.35547"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btree-traverse.svg">
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="btree-traverse (1).svg">
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,14 +24,14 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
      inkscape:cx="452.40685"
-     inkscape:cy="352.36966"
+     inkscape:cy="180.94109"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1005"
-     inkscape:window-x="0"
-     inkscape:window-y="35"
+     inkscape:window-width="1855"
+     inkscape:window-height="1056"
+     inkscape:window-x="65"
+     inkscape:window-y="24"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -117,7 +117,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -285,14 +285,14 @@
        sodipodi:linespacing="125%"
        id="text4276-1"
        y="398.21933"
-       x="228.57143"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="226.57143"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        xml:space="preserve"><tspan
          id="tspan4310-5"
          style="font-size:20px"
          y="398.21933"
-         x="228.57143"
-         sodipodi:role="line">fancy .. free</tspan></text>
+         x="226.57143"
+         sodipodi:role="line">map .. moon</tspan></text>
     <rect
        y="433.03897"
        x="587.67676"
@@ -304,14 +304,14 @@
        sodipodi:linespacing="125%"
        id="text4355"
        y="458.36218"
-       x="626"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="620"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        xml:space="preserve"><tspan
          style="font-size:20px"
          y="458.36218"
-         x="626"
+         x="620"
          id="tspan4357"
-         sodipodi:role="line">flight</tspan></text>
+         sodipodi:role="line">mirror</tspan></text>
     <path
        inkscape:connector-curvature="0"
        id="path4359"
