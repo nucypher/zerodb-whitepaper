@@ -367,7 +367,11 @@ We assume that both strong and weak adversaries are passive (honest but curious)
 	\begin{center}
         \includegraphics[width=0.7\columnwidth]{surname-attack.pdf}
 	\end{center}
-    \caption{Fraction of queries where last name can be inferred by a passive observer depending on the number of queries made to the database}
+    \caption{
+        Fraction of queries where last name can be inferred by a passive observer depending on the number of queries made to the database.
+        The inferred fraction of names depends on whether we index first and last names separately or together.
+        In CryptDB~\cite{cryptdb} this information is available to an attacker immediately.
+    }
 	\label{fig:surname-attack}
 \end{figure}
 
