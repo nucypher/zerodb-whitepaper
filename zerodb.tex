@@ -235,7 +235,7 @@ In ZeroDB (as in ZODB), we can create indexes on attributes of related objects, 
 
 \subsection{Optimizations specific for remote client}
 
-In most cases, all the query logic in ZeroDB happens client-side (e.g. client and storage are separated by a network channel with high latency).
+In most cases, all the query logic in ZeroDB happens client-side (i.e. client and storage are separated by a network channel with high latency).
 Therefore, we use two primitives specific for this architecture.
 
 \begin{figure}
@@ -252,9 +252,9 @@ Therefore, we use two primitives specific for this architecture.
 \label{sec:bulk-fetching}
 
 When a tree (or sub-tree) is small enough, it could be more performant to fetch the entire tree to the client.
-We do not need to do that bucket-by-bucket, as one would do with an index stored on a local hard drive, but in a logarithmic number of steps.
+We can do that in a logarithmic number of steps, rather than bucket-by-bucket, as one would do with an index stored on a local hard drive.
 
-In order to do that, we fetch the root first~\figref{fig:fetch-tree}.
+In order to do that, we fetch the root first as in~\figref{fig:fetch-tree}.
 The client unpacks the root bucket and fetches all its children in one query.
 Then it unpacks all the child nodes and learns the IDs of their children.
 This process continues until the entire B-Tree is fetched.
@@ -263,15 +263,16 @@ Thus, the number of queries is equal to the height of the B-Tree, $H$, proportio
 When we fetch a tree, we implicitly show the number of objects it contains, $S_{\mbox{ix}}$, to the server.
 Based on the size of the read data, the observer would be able to infer a number close to $S_{\mbox{ix}}$ and associate it with the bucket IDs just read.
 Therefore, this technique should be used as rarely as possible, combined with reading other data at the same time or with oblivious RAMs~\cite{path-oram,burst-oram,oram-multicloud,ods-wang-2014}.
-The latter would prevent the observer from learning bucket IDs.
+The latter would prevent the server from learning bucket IDs.
 
 \subsubsection{Parallel tree traversal}
 \label{sec:parallel-traversal}
 
-Often queries involve several values of the same field (or different fields).
-For example, indexing a new document containing $100$ words could be an expensive operation since it would involve $100\,H$ requests to the server, making the performance defined by client-server latency very poor.
+Often, queries involve several values of the same field (or different fields).
+For example, indexing a new document containing $100$ words could be an expensive operation since it would involve $100\,H$ requests to the server,
+making the performance very poor due to client-server latency.
 
-In order to fix that, we traverse the B-Tree in parallel~\figref{fig:parallel-traversal}.
+In order to fix that, we traverse the B-Tree in parallel as in~\figref{fig:parallel-traversal}.
 We first fetch the root of the tree.
 Then, we fetch only those child-buckets of the root which are relevant to the values in our query.
 Then, we fetch only the relevant children of those, etc.
@@ -288,7 +289,7 @@ If there are multiple users of the same encrypted dataset, there are serious sho
 Since the architecture of ZeroDB allows using any encryption algorithm, we can use proxy re-encryption~\cite{afgh,libert2011unidirectional}
 or delta-keys~\cite{delta-keys,mylar} to share data with other users (third parties) of the same dataset.
 These algorithms allow the third party to hold an encryption key other than that used to encrypt the data,
-while still being able to do the same queries as the data owner, until the server revokes their key.
+while still being able to do the same queries as the data owner, until the data owner revokes their access.
 We can also granularly share subsets of data, by combining these sharing algorithms with ZeroDB's query functionality.
 
 Sharing an entire dataset is done as follows.
@@ -300,10 +301,10 @@ So, we store $e_a(cek_i) = \mbox{encrypt}(priv_a, cek_i)$ and $c_i(obj) = \mbox{
 
 When user $A$ wants to give user $B$ access to the entire dataset and indexes, he constructs a re-encryption key $r_{ab}$ such that
 the server can transform content-encryption key as $e_b(cek_i) = \mbox{transform}(r_{ab}, e_a(cek_i))$.
-Re-encryption key $r_{ab}$ is given to the server, along with a revocation time.
+Re-encryption key $r_{ab}$ is given to the server, along with an optional revocation time.
 While the server has this re-encryption key, it transforms CEK's of encrypted objects $e_a(cek_i) \rightarrow e_b(cek_i)$ as client $B$ requests the objects.
 The server can revoke the key by removing $r_{ab}$ and by throttling queries.
-Client $B$ is now able to do tree traversal, in the same manner as client $A$.
+While $r_{ab}$ is valid and present on the server, client $B$ is able to do tree traversals in the same manner as client $A$.
 
 \subsection{Granular access permissions}
 
@@ -327,7 +328,7 @@ Each node of a B-Tree has a key associated with it.
 Keys for child nodes $k_{*i}$ are derived from a key for the parent node $k_*$.
 The keys can be derived as $k_{*i} = \mbox{SHA256}(k_* + i)$.
 Client $A$ traverses the tree along the beginning and end of the range.
-It shares keys for those buckets with $B$ giving $B$ the ability to do tree traversal within this range (buckets with blue background in~\figref{fig:keytree}).
+It shares keys for those buckets with $B$, giving $B$ the ability to do tree traversal within this range (the buckets with blue background in~\figref{fig:keytree}).
 However, there may be buckets which are partly within the range.
 Client $A$ passes key-reference pairs for buckets which belong to the contour of the range (depicted as red diamonds).
 There should be no more than $2\,s_b$ such pairs, where $s_b$ is the maximum capacity of a bucket.
@@ -336,7 +337,7 @@ The set of keys giving access to the in-range fraction of the index and the in-r
 The described sharing mechanism suffers from the fact that $B$ is given all the information to decrypt objects within the range at once.
 In order to make this access revokable, we need to use proxy re-encryption.
 However, client $A$ should give hierarchical rights to re-encrypt the data to the server rather than to client $B$.
-E.g. the server can only re-encrypt objects within the range given a set of re-encryption keys $r_{ab}$.
+That is, the server should only be able to re-encrypt objects within the range, given a set of re-encryption keys $r_{ab}$.
 It is possible to do this using a conditional proxy re-encryption scheme (C-PRE)~\cite{conditional-pre-2009,unidirectional-pre-2010,conditional-pre-2014,hierarchical-pre}.
 
 Usually such proxy re-encryption schemes support giving a product of multiple equality conditions.
@@ -350,7 +351,7 @@ ZeroDB is agnostic to the encryption algorithm used.
 By default, we use authenticated strong encryption ({AES-256} in GCM mode).
 Nothing is decrypted on the server.
 
-Using deterministic or order-preserving encryption visible to the server could be detrimental to the security of the database in certain cases~\cite{cryptdb-hacked}.
+Using deterministic or order-preserving encryption visible to the server may be detrimental to the security of the database in certain cases~\cite{cryptdb-hacked}.
 However, even traversal of B-Trees leaves the possibility for an attacker to collect access statistics and infer the data in the database~\cite{access-pattern-attack}.
 We provide a security analysis and an example of the number of queries necessary for such an attack.
 
@@ -358,7 +359,7 @@ We provide a security analysis and an example of the number of queries necessary
 
 We adopt a threat model similar to the one used for the security analysis of CipherBase~\cite{cipherbase}.
 We introduce a \emph{strong adversary}, who has unlimited observational power and can view the contents of memory and disk at every moment of time.
-A \emph{weak adversary} can observe only a snapshot of memory and disk at one particular moment of time.
+A \emph{weak adversary} can observe only a snapshot of memory and disk at one particular moment in time.
 We assume that both strong and weak adversaries are passive (honest but curious) and do not return wrong results to the client.
 
 \subsection{Data confidentiality}
@@ -376,18 +377,18 @@ We assume that both strong and weak adversaries are passive (honest but curious)
 \end{figure}
 
 In ZeroDB, all contents of the database and indexes are stored as encrypted objects.
-Therefore, a weak adversary does not learn anything except for database size (including the number of fields, etc), even during queries.
+Therefore, a weak adversary does not learn anything except for database size (including the number of fields), even during queries.
 So, ZeroDB provides \emph{semantic security} against a weak adversary.
 
 A strong adversary, on the other hand, is able to observe access patterns and collect statistics of those over time.
 So, we provide \emph{operational security} against a strong adversary.
 
-First, we consider search queries which just require tree traversal.
+First, we consider search queries which only require tree traversal.
 For example, limit orders for queries which do not involve pulling a large subset of the index to the client.
 For simplicity, let's assume that all we have in a database index is a B-Tree of customer surnames.
 An active adversary is able to acquire access statistics of the index leaf nodes when searches of, say, $10$ people with a given last name are performed.
 However, the amount of statistics should be large enough to be able to distinguish different records in the database.
-If we assume that probability of a given surname appearing in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
+If we assume the probability of a given surname appearing in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
 and that keywords are distributed across queries according to a Poisson distribution,
 an adversary needs to observe two keywords at least $N_1$ and $N_2$ times, such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
 The fraction of last names which can be revealed by a strong adversary from a query given some number of queries is shown on~\figref{fig:surname-attack}.
@@ -416,14 +417,14 @@ which is especially interesting with decentralized storage layers such as Storj.
 
 
 ZeroDB requires several interactions between client and server in order to return query results.
-Thus, both connection bandwidth $b$ and time of round-trip between client and server $\tau$, determine the performance of queries.
-Moreover, there is an optimal bucket size $s_b$ for any given parameters.
+Thus, both connection bandwidth, $b$, and time of round-trip between client and server, $\tau$, determine the performance of queries.
+Moreover, there is an optimal bucket size, $s_b$, for any given parameters.
 
 Suppose we have an index in the form of a B-Tree of size $s_i$ bytes.
 The size of one record in the bucket is $s_r$ bytes.
 Apart from encryption one can apply compression.
 The compression rate is defined as the ratio of initial bucket size to final (compressed + encrypted) bucket size is $c$.
-The number of requests necessary to perform a query with an empty cache is equal to the height of B-Tree $h$, though we will also consider the case when we are allowed to cache up to $s_c$ bytes.
+The number of requests necessary to perform a query with an empty cache is equal to the height of B-Tree, $h$, though we will also consider the case when we are allowed to cache up to $s_c$ bytes.
 
 
 A good approximation for B-Tree height is~\cite{wiki:b-tree}:
@@ -483,7 +484,7 @@ The client authenticates with an X.509 certificate or a self-signed certificate 
 When a passphrase is used, the scrypt algorithm is used to derive a private key from the passphrase. Information about the salt is stored server-side and is given before establishing an authenticated encrypted connection.
 
 For symmetric encryption, we use AES256 in GCM mode.
-The symmetric key is derived from either the passphrase, or the private key in an X.509 certificate.
+The symmetric key is derived from either the passphrase, the private key in an X.509 certificate, or a key management service (KMS).
 
 If proxy re-encryption is used, we use the AFGH algorithm~\cite{afgh} to encrypt a random content key for an AES256 block cipher in GCM mode.
 
