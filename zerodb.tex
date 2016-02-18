@@ -227,7 +227,6 @@ This algorithm doesn't reveal any dataset sizes when we're interested in only a 
 It is efficient when document weights for different keywords are significantly different from each other.
 
 \subsubsection{Doing set intersection server-side}
-\label{sec:server-intersection}
 % XXX TO REMOVE: we'll not do this. Too insecure.
 % Concept of tree of keys is still useful, will copy to the sharing section
 
@@ -374,7 +373,7 @@ This gives the server ability to re-encrypt all buckets within the range specifi
 
 ZeroDB is agnostic to the encryption algorithm used.
 By default, we use authenticated strong encryption ({AES-256} in GCM mode).
-Nothing is decrypted on the server unless we choose to use server-side set intersections~(Sec.~\ref{sec:server-intersection}).
+Nothing is decrypted on the server.
 
 Using deterministic or order-preserving encryption visible to the server could be detrimental to the security of the database in certain cases~\cite{cryptdb-hacked}.
 However, even traversal of B-Trees leaves the possibility for an attacker to collect access statistics and infer the data in the database~\cite{access-pattern-attack}.
@@ -422,11 +421,6 @@ Of course, this is not desirable.
 To avoid this, we can download adjacent records in the same query so that the downloaded size is always approximately constant and equal to that of the largest sub-dataset.
 This way our security guarantees are similar to those for tree traversal.
 In order for this to work we need to unfold nested trees into one tree~(Sec.~\ref{sec:unfold-trees}).
-
-The security guarantees of server-side set intersections~(Sec.~\ref{sec:server-intersection}) are weaker.
-One query leaks the sum of the sizes of the datasets involved in the query and how many elements satisfy any $c$ conditions from the query where $1\le c\le n$, where $n$~ is the number of conditions in the query.
-The server can also assume that objects themselves (which are not stored in the index) will be read after the client obtains the result of the query and those can then be linked to deterministically encrypted object IDs.
-``Fake'' deterministically encrypted object IDs can help to not open the number of elements in sub-datasets, but this method still shows the equality graph to the server.
 
 We can significantly improve security guarantees by using ORAM techniques.
 They allow us to hide access patterns by writing back data after reading it.
