@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="472.74219"
+   width="506.78613"
    height="274.35889"
    id="svg2"
    version="1.1"
@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="225.30552"
-     inkscape:cy="115.37128"
+     inkscape:cx="140.06375"
+     inkscape:cy="115.37129"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -42,7 +42,7 @@
      fit-margin-bottom="0">
     <inkscape:grid
        originy="-1417.0376"
-       originx="-126.5415"
+       originx="-92.497559"
        snapvisiblegridlinesonly="true"
        enabled="true"
        visible="true"
@@ -122,7 +122,7 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(-155.01025,-25.671715)"
+     transform="translate(-120.96631,-25.671715)"
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
@@ -140,13 +140,8 @@
        style="fill:none;stroke:#000000;stroke-width:1.19047666;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
        inkscape:connector-curvature="0"
-       id="path3917"
-       d="m 197.13752,157.50902 -28.56075,29.99204"
-       style="fill:none;stroke:#000000;stroke-width:0.98942703px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <path
-       inkscape:connector-curvature="0"
        id="path3923"
-       d="m 249.48781,158.44999 27.45295,29.11008"
+       d="m 285.48781,158.44999 27.45295,29.11008"
        style="fill:none;stroke:#000000;stroke-width:1.23377657;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <text
        xml:space="preserve"
@@ -202,25 +197,25 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       x="168.24512"
+       x="256.24512"
        y="207.06821"
        id="text3931-9"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3933-0"
-         x="168.24512"
+         x="256.24512"
          y="207.06821"
          style="font-size:15px;text-align:center;text-anchor:middle">FHE</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-       x="276.5459"
+       x="312.5459"
        y="207.06821"
        id="text3931-4"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3933-7"
-         x="276.5459"
+         x="312.5459"
          y="207.06821"
          style="font-size:15px;text-align:center;text-anchor:middle">PHE</tspan></text>
     <text
@@ -302,7 +297,7 @@
            height="450"
            x="-128.36523"
            y="-23.285133" /></flowRegion><flowPara
-         id="flowPara7809"></flowPara></flowRoot>    <path
+         id="flowPara7809" /></flowRoot>    <path
        inkscape:connector-curvature="0"
        id="path3917-1"
        d="m 461.13752,157.50902 -28.56075,29.99204"
@@ -322,5 +317,44 @@
        id="path3923-6-7"
        d="m 565.48781,232.44999 27.45295,29.11008"
        style="fill:none;stroke:#000000;stroke-width:1.23377657;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3923-0"
+       d="m 229.48781,158.44999 27.45295,29.11008"
+       style="fill:none;stroke:#000000;stroke-width:1.23377657;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3923-0-6"
+       d="m 210.59765,158.44299 -27.1953,28.40979"
+       style="fill:none;stroke:#000000;stroke-width:1.21311271;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3923-0-6-5"
+       d="m 162.59765,158.44299 -27.1953,28.40979"
+       style="fill:none;stroke:#000000;stroke-width:1.21311271;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       x="184.24512"
+       y="207.06821"
+       id="text3931-9-0"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3933-0-4"
+         x="184.24512"
+         y="207.06821"
+         style="font-size:15px;text-align:center;text-anchor:middle">MPC</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       x="134.24512"
+       y="207.06821"
+       id="text3931-9-0-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3933-0-4-8"
+         x="134.24512"
+         y="207.06821"
+         style="font-size:15px;text-align:center;text-anchor:middle">SSE</tspan></text>
   </g>
 </svg>
