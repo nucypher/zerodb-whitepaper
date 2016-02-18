@@ -226,50 +226,6 @@ If ranges of possible scores overlap, we don't have enough info and we read more
 This algorithm doesn't reveal any dataset sizes when we're interested in only a fraction of documents, which is good for both security and scalability.
 It is efficient when document weights for different keywords are significantly different from each other.
 
-\subsubsection{Doing set intersection server-side}
-% XXX TO REMOVE: we'll not do this. Too insecure.
-% Concept of tree of keys is still useful, will copy to the sharing section
-
-\begin{figure}
-	\begin{center}
-        \subfloat[Branch node]{\label{fig:keytree-branch-node}\includegraphics[width=0.47\columnwidth]{keytree-branch-bucket.pdf}}
-        \qquad
-        \subfloat[Leaf node]{\label{fig:keytree-leaf-node}\includegraphics[width=0.47\columnwidth]{keytree-leaf-bucket.pdf}}\\
-        \subfloat[Hierarchy of keys (same as hierarchy of buckets)]{\label{fig:keytree}\includegraphics[width=0.7\columnwidth]{keytree.pdf}}
-	\end{center}
-    \caption{B-Tree structure which supports server-side set operations.
-        In order for server to do these operations, the client allows it to see deterministically encrypted object IDs $D(id_i)$.
-        The server can count the number of occurrences of each $D(id_i)$, and those values which are repeated the same number of times as the number of conditions in the ``and'' query are the ones the client wants to be returned.
-    }
-	\label{fig:server-side-sets}
-\end{figure}
-
-The performance bottleneck of many complex queries (such as multi-keyword search or queries with a product of multiple conditions) is set intersections.
-For multi-keyword search for example, doing set intersections server-side would help significantly when each keyword has too many pages associated with it (which is possible for extremely large datasets).
-
-Let us consider a query where $v_1=a$ and $v_2=b$.
-In order to do server-side set intersection, we reveal deterministically encrypted IDs $D(id_i)$ of all objects matching each of these conditions to the server~(\figref{fig:server-side-sets}).
-The server can see the frequency of each ID, which is equal to the number of conditions satisfied for this ID.
-The server sends those deterministically encrypted IDs which satisfy all conditions (two conditions in our example) to the client.
-
-In order to do that, buckets are split into two sections~(\figref{fig:server-side-sets}~\subref{fig:keytree-branch-node},~\subref{fig:keytree-leaf-node}).
-The first (top) section is encrypted with key $k^a$, which is known to the client but never known to the server.
-The second (bottom) section is encrypted with a key $k^b_{*i}$.
-Keys from $k^b$ family are hierarchical: child-keys $k^b_{*i}$ are derived from a key$k^b_*$  which can decrypt the bottom section of a node as well as the bottom sections of all its child nodes~(\figref{fig:keytree}).
-The keys can be derived as $k^b_{*i} = \mbox{SHA256}(k^b_* + i)$.
-
-The client traverses the B-Tree along the ``contour'' of the range (red at~\figref{fig:keytree}).
-It provides keys $k^b_i$ of buckets which are fully within the range and in-range deterministically encrypted object IDs $D(id_i)$ to the server.
-The server, using this information, is able to determine all children of those buckets and the $D(id_i)$ associated with them.
-After adding the $D(id_i)$ given by the client, the server can count how many times each value is repeated.
-Values which are repeated the same number of times as the number of conditions in the ``and'' query are returned to the client.
-
-In this case, the server can determine the total number of records matching any of the given conditions $n_1$ (the conditions themselves are unknown to the server),
-the number of records matching exactly two of the conditions $n_2$,
-etc. until the maximum number of conditions.
-The server also learns ``parent-child'' relationships between some of the buckets.
-The server does not learn the order of the objects and it does not learn which conditions the client is applying.
-
 \subsubsection{Related objects}
 
 ZeroDB is based on ZODB, which uses object references instead of joins~\cite{zodb-references},
@@ -351,11 +307,28 @@ Client $B$ is now able to do tree traversal, in the same manner as client $A$.
 Let us first exemplify granular sharing of data in a scheme where $A$ shows encryption keys to $B$ and $A$ shares $M$ objects selected by a range query.
 It is possible to share data granularly in such a way that $A$ has to only send $B$ a number of keys proportional to $\log{M}$ rather than $M$.
 
-In order to do that, keys $k^a$ must form a tree hierarchy similar to the one we had for set intersections~(\figref{fig:keytree}).
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.7\columnwidth]{keytree.pdf}
+    \end{center}
+    \caption{
+        B-Tree structure which supports selecting keys for any range of data.
+        Hierarchy of keys is the same as hierarchy of buckets.
+        Giving keys from inside the contour would give access to objects only within the range.
+    }
+    \label{fig:keytree}
+\end{figure}
+
+% XXX
+In order to do that, keys $k^a$ must form a tree hierarchy~(\figref{fig:keytree}).
+Each node of a tree has a key associated with it.
+Keys for child nodes $k_{*i}$ are derived from a key for the parent node $k_*$.
+The keys can be derived as $k_{*i} = \mbox{SHA256}(k_* + i)$.
 Client $A$ traverses the tree along the beginning and end of the range.
 It shares keys for those buckets with $B$ giving $B$ the ability to do tree traversal within this range (buckets with blue background in~\figref{fig:keytree}).
 However, there may be buckets which are partly within the range.
-Client $A$ passes key-reference pairs for buckets which belong to the contour of the range (there should be no more than $2\,s_b$ such pairs, where $s_b$ is the maximum bucket size).
+Client $A$ passes key-reference pairs for buckets which belong to the contour of the range (depicted as red diamonds).
+There should be no more than $2\,s_b$ such pairs, where $s_b$ is the maximum capacity of a bucket.
 The set of keys giving access to the in-range fraction of the index and the in-range contents of the buckets from contour of the range are given to $B$, encrypted with his public key.
 
 The described sharing mechanism suffers from the fact that $B$ is given all the information to decrypt objects within the range at once.

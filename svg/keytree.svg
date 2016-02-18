@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="409.49881"
+     inkscape:cx="410.92738"
      inkscape:cy="130.77816"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -309,7 +309,7 @@
        sodipodi:cy="72.362183"
        sodipodi:cx="270"
        id="path3939-7"
-       style="fill:none;stroke:#000000;stroke-width:1.82000005;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ffaaaa;stroke:#000000;stroke-width:1.82000004999999998;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        sodipodi:type="arc"
        transform="translate(60.406102,-0.55583901)" />
     <path
@@ -349,7 +349,7 @@
        sodipodi:cy="72.362183"
        sodipodi:cx="270"
        id="path3939-1"
-       style="fill:none;stroke:#000000;stroke-width:1.82000004999999998;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
+       style="fill:#ffaaaa;stroke:#000000;stroke-width:1.82000004999999998;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
        sodipodi:type="arc"
        transform="translate(-121.51523,132.52538)" />
     <path
@@ -459,7 +459,7 @@
        height="12.878332"
        width="12.878332"
        id="rect4058-8-6"
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.50000000000000000;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:#ffaaaa;fill-opacity:1;stroke:#000000;stroke-width:1.50000000000000000;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <rect
        transform="matrix(0.68369623,-0.72976672,0.72976672,0.68369623,0,0)"
        y="304.45908"
@@ -587,7 +587,7 @@
        height="12.878332"
        width="12.878332"
        id="rect4058-7"
-       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+       style="fill:#ffaaaa;stroke:#000000;stroke-width:1.50000000000000000;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <rect
        transform="matrix(0.68369623,-0.72976672,0.72976672,0.68369623,0,0)"
        y="637.89844"
@@ -651,10 +651,8 @@
          id="tspan3933"
          x="328.46875"
          y="37.068199">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935">b</tspan><tspan
    id="tspan4111"
-   style="font-size:65%;baseline-shift:sub">root</tspan></tspan></text>
+   style="font-size:65.00091553%;baseline-shift:sub">root</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:22px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -666,8 +664,6 @@
          id="tspan3933-5"
          x="84.46875"
          y="171.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-9">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-7">0</tspan></tspan></text>
     <text
@@ -681,8 +677,6 @@
          id="tspan3933-6"
          x="314.46875"
          y="171.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-6">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-5">1</tspan></tspan></text>
     <text
@@ -696,8 +690,6 @@
          id="tspan3933-9"
          x="594.46875"
          y="171.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-5">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-8">2</tspan></tspan></text>
     <text
@@ -711,8 +703,6 @@
          id="tspan3933-0"
          x="-11.53125"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-0">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-2">00</tspan></tspan></text>
     <text
@@ -726,8 +716,6 @@
          id="tspan3933-2"
          x="68.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-1">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-3">01</tspan></tspan></text>
     <text
@@ -741,8 +729,6 @@
          id="tspan3933-7"
          x="148.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-57">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-58">02</tspan></tspan></text>
     <text
@@ -756,8 +742,6 @@
          id="tspan3933-28"
          x="320.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-4">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-9">11</tspan></tspan></text>
     <text
@@ -771,8 +755,6 @@
          id="tspan3933-51"
          x="400.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-01">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-80">12</tspan></tspan></text>
     <text
@@ -786,8 +768,6 @@
          id="tspan3933-4"
          x="240.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-09">b</tspan><tspan
    id="tspan4115"
    style="font-size:65.00091553%;baseline-shift:sub">10</tspan></tspan></text>
     <text
@@ -801,8 +781,6 @@
          id="tspan3933-75"
          x="514.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-7">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-0">20</tspan></tspan></text>
     <text
@@ -816,8 +794,6 @@
          id="tspan3933-59"
          x="592.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-3">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-50">21</tspan></tspan></text>
     <text
@@ -831,8 +807,6 @@
          id="tspan3933-8"
          x="658.46875"
          y="277.06821">k<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan3935-99">b</tspan><tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3937-03">22</tspan></tspan></text>
   </g>
