@@ -182,6 +182,7 @@ For this query, we find a B-Tree (or multiple B-Trees) corresponding to the cond
 This makes limit orders much more performant and does not leak information about possible dataset size to the server.
 
 \subsection{Incremental full-text search}
+\label{sec:fulltext}
 
 Full-text search with keywords $t_1, t_2,\ldots, t_n$ requires ordering results by net scores of the documents relative to these keywords.
 One rarely needs all the matching documents at once, and the result is almost always sorted by the score.
@@ -407,6 +408,7 @@ Of course, this is not desirable.
 To avoid this, we can download adjacent records in the same query so that the downloaded size is always approximately constant and equal to that of the largest sub-dataset.
 This way our security guarantees are similar to those for tree traversal.
 In order for this to work we need to unfold nested trees into one tree~(Sec.~\ref{sec:unfold-trees}).
+The way we perform full-text searches~(Sec.~\ref{sec:fulltext}) doesn't reveal numbers of documents per keyword since it's done in incremental manner.
 
 We can significantly improve security guarantees by using ORAM techniques.
 They allow us to hide access patterns by writing back data after reading it.
