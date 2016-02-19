@@ -24,13 +24,13 @@
 
 \begin{abstract}
 ZeroDB is an end-to-end encrypted database that enables clients to operate on (search, sort, query, and share) encrypted data without exposing encryption keys or cleartext data to the database server.
-The familiar client-server architecture remains, but query logic and encryption keys are pushed client-side.
-Since the server has no insight into the nature of the data, the risk of data being exposed after a server-side data breach is eliminated.
-Even if the server is successfully infiltrated, passive adversaries would not have access to the cleartext data and
+The familiar client-server architecture is unchanged, but query logic and encryption keys are pushed client-side.
+Since the server has no insight into the nature of the data, the risk of data being exposed via a server-side data breach is eliminated.
+Even if the server is successfully infiltrated, adversaries would not have access to the cleartext data and
 cannot derive anything useful out of disk or RAM snapshots.
 
 ZeroDB provides end-to-end encryption while maintaining much of the functionality expected of a modern database, such as full-text search, sort, and range queries.
-Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to enable secure, granular sharing of encrypted data without exposing keys to the server and without sharing the same encryption key between all users of the database.
+Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to enable secure, granular sharing of encrypted data without exposing keys to the server and without sharing the same encryption key between users of the database.
 \end{abstract}
 
 \date{\today}
@@ -38,12 +38,12 @@ Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to ena
 
 \section{Introduction}
 
-Given the cost, performance, and scalability benefits, outsourcing of on-premise infrastructure to cloud environments is accelerating.
-However, concerns over data security and the frequency of high-profile data breaches hinder cloud adoption in highly-regulated industries such as financial services.
-While strong encryption can alleviate many of these concerns (by guaranteeing data confidentiality), once data is encrypted, it is no longer usable.
+Given the cost, performance, and scalability benefits of cloud environments, outsourcing of on-premise infrastructure is accelerating.
+However, concerns over data security and the frequency of high-profile data breaches continue to hinder cloud adoption in highly-regulated and security-sensitive industries.
+While strong encryption can alleviate many of these concerns by guaranteeing data confidentiality, once data is encrypted it is no longer usable.
 Several strategies for computing on encrypted data have recently emerged that seek to provide the benefits of encryption while preserving the functionality of encrypted data.
 
-These techniques typically fall into two broad categories: (1) encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries~\cite{tutorial}. These two approaches can be further deconstructed into (1) searchable symmetric encryption (SSE), secure multi-party computation (MPC), and fully and partially homomorphic encryption (FHE and PHE, respectively) and (2) client-end solutions and in-cloud solutions, resulting in the taxonomy shown in~\figref{fig:taxonomy}.
+These techniques fall into two broad categories: (1) encryption schemes that enable server-side computation directly over ciphertext and (2) trusted modules that are assumed to be inaccessible by adversaries~\cite{tutorial}. These two approaches can be further deconstructed into (1) searchable symmetric encryption (SSE), secure multi-party computation (MPC), and fully and partially homomorphic encryption (FHE and PHE, respectively) and (2) client-end solutions and in-cloud solutions, resulting in the taxonomy shown in~\figref{fig:taxonomy}.
 
 \begin{figure}
 	\begin{center}
@@ -51,17 +51,18 @@ These techniques typically fall into two broad categories: (1) encryption scheme
 	\end{center}
   \caption{Taxonomy of approaches to secure in-cloud processing.
     Computing directly on encrypted data can be done in a fully or partially homomorphic (FHE and PHE, respectively) manner.
-    Searchable symmetric encryption (SSE) or secure multi-party computation schemes (MPC) may be use as well.
+    Searchable symmetric encryption (SSE) or secure multi-party computation schemes (MPC) may be used as well.
     Trusted Modules (TM) include client-end and in-cloud solutions.}
 	\label{fig:taxonomy}
 \end{figure}
 
 Notable works in this area include Gentry's seminal paper on homomorphic encrytion~\cite{gentry}, Popa's CryptDB~\cite{cryptdb}, which executes SQL queries
-over encrypted data using a collection of efficient SQL-aware encryption schemes, Dynamic Searchable Symmetric Encryption~\cite{dynamicsse}, Efficient Secure Two-Party Computation Using Symmetric Cut-and-Choose~\cite{mpc}, which yields a 3x performance gain against existing garbled circuit schemes, and Cipherbase~\cite{cryptdb}, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
-Smart provides a more comprehensive overview of the latest research and private sector efforts to achieve data encrypted in-use~\cite{smart}.
+over encrypted data using a collection of efficient SQL-aware encryption schemes, Dynamic Searchable Symmetric Encryption~\cite{dynamicsse}, Efficient Secure Two-Party Computation Using Symmetric Cut-and-Choose~\cite{mpc}, which yields a 3x performance gain against existing garbled circuit schemes, and Cipherbase~\cite{cipherbase}, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
+Smart provides a more thorough exploration of the latest research and private sector efforts to achieve data encrypted in-use~\cite{smart}.
 
 ZeroDB provides confidentiality of data stored on the database server.
-It assumes a single (or multiple) clients that initially own the data (and associated encryption keys) and wish to outsource the encrypted data to an untrusted server, while maintaining usability of the data.
+It assumes a client(s) that initially owns the data and associated encryption keys.
+This client wishes to outsource the encrypted data to an untrusted server, while maintaining usability of the data.
 It assumes passive (honest but curious) adversaries who do not return wrong results to the client.
 In the future, we may consider active adversaries and modify our protocol accordingly.
 
