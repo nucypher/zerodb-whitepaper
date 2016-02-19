@@ -60,6 +60,12 @@ Notable works in this area include Gentry's seminal paper on homomorphic encryti
 over encrypted data using a collection of efficient SQL-aware encryption schemes, Dynamic Searchable Symmetric Encryption~\cite{dynamicsse}, Efficient Secure Two-Party Computation Using Symmetric Cut-and-Choose~\cite{mpc}, which yields a 3x performance gain against existing garbled circuit schemes, and Cipherbase~\cite{cryptdb}, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
 Smart provides a more comprehensive overview of the latest research and private sector efforts to achieve data encrypted in-use~\cite{smart}.
 
+ZeroDB provides confidentiality of data stored on the database server.
+It assumes a single (or multiple) clients that initially own the data (and associated encryption keys) and wish to outsource the encrypted data to an untrusted server, while maintaining usability of the data.
+It assumes passive (honest but curious) adversaries who do not return wrong results to the client.
+In the future, we may consider active adversaries and modify our protocol accordingly.
+
+
 
 \section{Query protocol}
 
