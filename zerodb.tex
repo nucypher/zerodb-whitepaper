@@ -394,15 +394,16 @@ However, the amount of statistics should be large enough to be able to distingui
 If we assume the probability of a given surname appearing in a given query is the same as in the U.S. Census 2000 data~\cite{us-census-surnames}
 and that keywords are distributed across queries according to a Poisson distribution,
 an adversary needs to observe two keywords at least $N_1$ and $N_2$ times, such that $|N_1 - N_2| > \sqrt{N_1 + N_2}$.
-The fraction of last names which can be revealed by a strong adversary from a query given some number of queries is shown on~\figref{fig:surname-attack}.
-For example, the surnames in $10\%$ of new queries can be inferred by a strong adversary after observing a million queries (although surnames not touched by queries are not revealed).
+The fraction of last names which can be revealed by a resident adversary from a query given some number of queries is shown on~\figref{fig:surname-attack}.
+For example, the surnames in $10\%$ of new queries can be inferred by a resident adversary after observing a million queries (although surnames not touched by queries are not revealed).
 However, if one indexes full names as one field (first names are taken from UK Office of national statistics~\cite{uk-first-names}),
 one would need to do $300$ millions queries to infer $10\%$ of full names in new queries.
 This assumes that an attacker is aware of the statistics of data in the database, and nothing other than names are queried.
 So, these estimates provide a lower bound of the number of queries required to infer useful information.
 
 Unlike CipherBase~\cite{cipherbase}, our approach does not leak information about the order of the elements.
-By observing access patterns, the server can only figure out which buckets are leaf nodes and which are branch nodes.
+By observing access patterns, the server can only figure out which buckets are leaf nodes and which are branch nodes,
+however not whether the child node is located left or right of the parent node.
 
 In cases where we need to prefetch a large chunk of a B-Tree~(Sec.~\ref{sec:prefetch}), we immediately reveal information about the size of the sub-dataset to the server.
 Of course, this is not desirable.
