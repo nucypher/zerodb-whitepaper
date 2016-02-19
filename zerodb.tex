@@ -214,14 +214,14 @@ $$s(D) = \frac{\sum_{i=0}^n s(t_i, D)}{\sqrt{\sum IDF(t_i)^2}}.$$
 This results in having to sum up the scores, $TF(t,D)/\sqrt{|D|}$, by which document references are pre-ordered (in descending order)
 with weights, $IDF^2/\sqrt{\sum IDF}$, calculated at query time.
 
-In order to produce docids sorted by $s$ incrementally, we first tuples $(s_j(t_i, D), docid_j)$ with highest values of $s$ for all the query terms $t_i$.
-Then we calculate possible ranges of document scores, given our knowledge of highest known scores for terms $t_i$ and scores for particular $docids$ which we've read.
-For example, a range of scores for a document $D$ appearing in a sorted data structure would be:
+In order to produce document IDs sorted by $s$ incrementally, we first fetch tuples $(s_j(t_i, D), docid_j)$ with the highest values of $s$ for all the query terms, $t_i$.
+Then we calculate possible ranges of document scores, given our knowledge of the highest known scores for terms $t_i$ and scores for particular $docids$ which we've read.
+For example, a range of scores for a document, $D$, appearing in a sorted data structure would be:
 $$\min(s(D)) = \sum_{\forall i~s_j(t_i, D)\in\text{cache}} s_j(t_i, D),\qquad
 \max{s(D)} = \min(s(D)) + \sum_{\forall i~s_j(t_i, D)\notin\text{cache}} \min_{\in\text{cache}}\left(s(t_i, *)\right).$$
-If known documents which haven't yet been returned don't overlap by their range of possible scores when sorted by $\min(s)$,
-we are ok to grab documents from the cache.
-If ranges of possible scores overlap, we don't have enough info and we read more document scores for the keyword where the difference between scores for different documents is currently the highest.
+If the known documents which haven't yet been returned don't overlap by their range of possible scores when sorted by $\min(s)$,
+it is fine to grab documents from the cache.
+If the ranges of possible scores overlap, we don't have enough information and we read more document scores of the keyword for which the difference between scores for different documents is currently the highest.
 
 This algorithm doesn't reveal any dataset sizes when we're interested in only a fraction of documents, which is good for both security and scalability.
 It is efficient when document weights for different keywords are significantly different from each other.
