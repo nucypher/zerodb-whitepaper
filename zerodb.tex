@@ -50,13 +50,14 @@ These techniques typically fall into two broad categories: (1) encryption scheme
     \subfloat{\label{fig:taxonomy}\includegraphics[width=0.7\columnwidth]{taxonomy.pdf}}
 	\end{center}
   \caption{Taxonomy of approaches to secure in-cloud processing.
-           Computing directly on encrypted data can be done in a fully homomorphic (FHE) or partially homomorphic manner (PHE).
-           Trusted Modules (TM) include client-end and in-cloud solutions.}
+    Computing directly on encrypted data can be done in a fully or partially homomorphic (FHE and PHE, respectively) manner.
+    Searchable symmetric encryption (SSE) or secure multi-party computation schemes (MPC) may be use as well.
+    Trusted Modules (TM) include client-end and in-cloud solutions.}
 	\label{fig:taxonomy}
 \end{figure}
 
 Notable works in this area include Gentry's seminal paper on homomorphic encrytion~\cite{gentry}, Popa's CryptDB~\cite{cryptdb}, which executes SQL queries
-over encrypted data using a collection of efficient SQL-aware encryption schemes, Dynamic Searchable Symmetric Encryption~\cite{dynamicsse}, and Cipherbase~\cite{cryptdb}, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
+over encrypted data using a collection of efficient SQL-aware encryption schemes, Dynamic Searchable Symmetric Encryption~\cite{dynamicsse}, Efficient Secure Two-Party Computation Using Symmetric Cut-and-Choose~\cite{mpc}, which yields a 3x performance gain against existing garbled circuit schemes, and Cipherbase~\cite{cryptdb}, a comprehensive database system that provides strong end-to-end data confidentiality through encryption and secure hardware.
 Smart provides a more comprehensive overview of the latest research and private sector efforts to achieve data encrypted in-use~\cite{smart}.
 
 
@@ -95,7 +96,7 @@ Frequently accessed buckets can be cached client-side so that subsequent queries
 The server can infer which level of the tree buckets belong to by observing search patterns,
 however it cannot figure out the ordering of elements as it cannot see which link from the bucket was used.
 
-The server is responsible for data replication, multi-version concurrency, object locking, user authentication, quotas, etc.
+The server is responsible for data replication, multi-version concurrency, object locking, user authentication, quotas, and optional immutability/write-once-read-many (WORM) guarantees.
 The client performs encryption/decryption and query logic.
 In other words, if the server maliciously gives data belonging to user Alice to user Eve,
 Eve will not be able to decrypt the obtained data anyway.
@@ -371,7 +372,7 @@ We assume that both strong and weak adversaries are passive (honest but curious)
     \caption{
         Fraction of queries where last name can be inferred by a passive observer depending on the number of queries made to the database.
         The inferred fraction of names depends on whether we index first and last names separately or together.
-        In CryptDB~\cite{cryptdb} this information is available to an attacker immediately.
+        In CryptDB, this information is available to an attacker immediately~\cite{cryptdb}.
     }
 	\label{fig:surname-attack}
 \end{figure}
