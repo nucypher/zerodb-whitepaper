@@ -363,7 +363,7 @@ We adopt a threat model similar to the one used for the security analysis of Cip
 We introduce a \emph{resident adversary}, who has unlimited observational power and can view the contents of memory and disk at every moment of time.
 An \emph{instant adversary} can observe only a snapshot of memory and disk at one particular moment in time.
 We assume that both resident and instant adversaries are passive (honest but curious) and do not return wrong results to the client.
-In future we may consider active adversaries and modify our protocol accordingly.
+In the future, we may consider active adversaries and modify our protocol accordingly.
 
 \subsection{Data confidentiality}
 
@@ -398,8 +398,8 @@ The fraction of last names which can be revealed by a strong adversary from a qu
 For example, the surnames in $10\%$ of new queries can be inferred by a strong adversary after observing a million queries (although surnames not touched by queries are not revealed).
 However, if one indexes full names as one field (first names are taken from UK Office of national statistics~\cite{uk-first-names}),
 one would need to do $300$ millions queries to infer $10\%$ of full names in new queries.
-This assumes that an attacker is aware what is statistics of data in the database, and nothing else than names is queried.
-So, these estimates provide lower bound of number of queries required to infer useful information.
+This assumes that an attacker is aware of the statistics of data in the database, and nothing other than names are queried.
+So, these estimates provide a lower bound of the number of queries required to infer useful information.
 
 Unlike CipherBase~\cite{cipherbase}, our approach does not leak information about the order of the elements.
 By observing access patterns, the server can only figure out which buckets are leaf nodes and which are branch nodes.
