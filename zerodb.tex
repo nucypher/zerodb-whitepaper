@@ -135,7 +135,7 @@ After that we (optionally) bulk-fetch all the objects which match the range quer
 This is done in a way similar to prefetching all trees (Section~\ref{sec:bulk-fetching}).
 Selecting all objects in a range reveals the approximate number of objects in this range to the server (the range and field names remain secret).
 
-\subsection{Complex queries (multi-keyword search, multiple conditions)}  % XXX
+\subsection{Complex queries (multi-keyword search, multiple conditions)}
 
 So far we have described simple queries.
 But queries may contain multiple conditions at the same time.
@@ -210,7 +210,6 @@ $$IDF(t) = 1 + \ln\left( \frac{N_{docs}}{N_{docs}(t) + 1} \right),$$
 where $N_{docs}$ is the total number of text documents indexed and $N_{docs}(t)$ is the number of documents which contain term $t$.
 The values of $N_{docs}$ and $N_{docs}(t)$ are stored in an encrypted form and updated when new documents are added.
 For easy conflict resolution, these values can be encrypted using additively homomorphic encryption (Pailier or exponential ElGamal).
-% XXX let's mention Pailier/ElGamal separately for Length() property
 The score of a document for one term, $t$, will be:
 $$s(t, D) = \frac{TF(t, D) \cdot IDF(t)^2}{\sqrt{|D|}},$$
 where $|D|$ is total number of unique terms in document $D$.
