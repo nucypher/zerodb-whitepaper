@@ -413,10 +413,9 @@ The way we perform full-text searches~(Sec.~\ref{sec:fulltext}) doesn't reveal n
 
 We can significantly improve security guarantees by using ORAM techniques.
 They allow us to hide access patterns by writing back data after reading it.
-Several algorithms are available, though the most promising ones are Burst ORAM~\cite{burst-oram}
+Several algorithms are available, though the most promising ones are Ring ORAM~\cite{practical-oram} with XOR technique~\cite{burst-oram}
 and oblivious data structures~\cite{ods-wang-2014}.
-Still, these require writing back to the database about 20 times the amount of data read
-(although these numbers improve every year).
+Still, these require writing back to the database about 5-20 times the amount of data read (although these numbers improve every year).
 It is also possible that hiding access patterns in a multi-cloud or fully decentralized arrangement has quite good performance properties~\cite{oram-multicloud},
 which is especially interesting with decentralized storage layers such as Storj.io~\cite{storj} and IPFS~\cite{ipfs}.
 
