@@ -69,6 +69,7 @@ In the future, we may consider active adversaries and modify our protocol accord
 
 
 \section{Query protocol}
+\label{sec:query-protocol}
 
 The basis of ZeroDB's end-to-end encrypted query protocol is as follows.
 The client interacts with the server during the execution of a query over a series of round trips.
@@ -306,7 +307,7 @@ the server can transform the content-encryption key as $e_b(cek_i) = \mbox{trans
 The re-encryption key, $r_{ab}$, is given to the server, along with an optional revocation time.
 While the server has this re-encryption key, it transforms CEKs of encrypted objects, $e_a(cek_i) \rightarrow e_b(cek_i)$, as client $B$ requests them.
 The server can revoke the key by removing $r_{ab}$.
-Thus, while $r_{ab}$ is valid and present on the server, client $B$ is able to do tree traversals in the same manner as client $A$.
+Thus, while $r_{ab}$ is valid and present on the server, client $B$ is able to do tree traversals in the same manner as client $A$ (Sec.~\ref{sec:query-protocol}).
 
 \subsection{Granular access permissions}
 
