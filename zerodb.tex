@@ -503,6 +503,14 @@ The symmetric key is derived from either the passphrase, the private key in an X
 
 If proxy re-encryption is used, we use the AFGH algorithm~\cite{afgh} to encrypt a random content key for an AES256 block cipher in GCM mode.
 
+\section{Acknowledgements}
+
+We thank Prof. David Evans from University of Virginia and Prof. Nigel Smart from University of Bristol for reviewing this whitepaper
+and giving good advice about further improvements in security and performance of ZeroDB.
+We also thank Prof. Nickolai Zeldovich, Christopher Fletcher, Albert Kwon and Ling Ren from MIT for their advice at earlier stages of ZeroDB development.
+Additionally, we thank Dr. Raluca Ada Popa from UC Berkeley for fruitful discussions about ways to offload some of complicated query processing to the server
+in a secure manner.
+
 \bibliography{zerodb}
 
 \end{document}
