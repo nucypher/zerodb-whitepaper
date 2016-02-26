@@ -1,4 +1,5 @@
-\documentclass[notitlepage,longbibliography]{revtex4-1}
+\documentclass[letterpaper,twocolumn,10pt]{article}
+\usepackage{usenix,endnotes}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -14,15 +15,23 @@
 
 \begin{document}
 
-\title{ZeroDB white paper\footnote{This white paper describes planned functionality but not necessarily the current state of ZeroDB}}
+\date{}
 
-\author{M. Egorov}
-\email{michael@zerodb.io}
-\author{M. Wilkison}
-\email{maclane@zerodb.io}
-\affiliation{ZeroDB, Inc.}
+\title{\Large \bf ZeroDB white paper}
 
-\begin{abstract}
+\author{
+{\rm Michael Egorov}\\
+ZeroDB, Inc.
+\and
+{\rm MacLane Wilkison}\\
+ZeroDB, Inc.
+}
+
+\maketitle
+
+\thispagestyle{empty}
+
+\subsection*{Abstract}
 ZeroDB is an end-to-end encrypted database that enables clients to operate on (search, sort, query, and share) encrypted data without exposing encryption keys or cleartext data to the database server.
 The familiar client-server architecture is unchanged, but query logic and encryption keys are pushed client-side.
 Since the server has no insight into the nature of the data, the risk of data being exposed via a server-side data breach is eliminated.
@@ -31,10 +40,6 @@ cannot derive anything useful out of disk or RAM snapshots.
 
 ZeroDB provides end-to-end encryption while maintaining much of the functionality expected of a modern database, such as full-text search, sort, and range queries.
 Additionally, ZeroDB uses proxy re-encryption and/or delta key technology to enable secure, granular sharing of encrypted data without exposing keys to the server and without sharing the same encryption key between users of the database.
-\end{abstract}
-
-\date{\today}
-\maketitle
 
 \section{Introduction}
 
@@ -220,8 +225,8 @@ with weights, $IDF^2/\sqrt{\sum IDF}$, calculated at query time.
 In order to produce document IDs sorted by $s$ incrementally, we first fetch tuples $(s_j(t_i, D), docid_j)$ with the highest values of $s$ for all the query terms, $t_i$.
 Then we calculate possible ranges of document scores, given our knowledge of the highest known scores for terms $t_i$ and scores for particular $docids$ which we've read.
 For example, a range of scores for a document, $D$, appearing in a sorted data structure would be:
-$$\min(s(D)) = \sum_{\forall i~s_j(t_i, D)\in\text{cache}} s_j(t_i, D),\qquad
-\max{s(D)} = \min(s(D)) + \sum_{\forall i~s_j(t_i, D)\notin\text{cache}} \min_{\in\text{cache}}\left(s(t_i, *)\right).$$
+$$\min(s(D)) = \sum_{\forall i~s_j(t_i, D)\in\text{cache}} s_j(t_i, D),$$
+$$\max(s(D)) = \min(s(D)) + \sum_{\forall i~s_j(t_i, D)\notin\text{cache}} \min_{\in\text{cache}}\left(s(t_i, *)\right).$$
 If the known documents which haven't yet been returned don't overlap by their range of possible scores when sorted by $\min(s)$,
 it is fine to grab documents from the cache.
 If the ranges of possible scores overlap, we don't have enough information and we read more document scores of the keyword for which the difference between scores is currently the highest.
@@ -502,7 +507,8 @@ We also thank Prof. Nickolai Zeldovich, Christopher Fletcher, Albert Kwon and Li
 Additionally, we thank Dr. Raluca Ada Popa from UC Berkeley for fruitful discussions about ways to offload complicated query processing to the server
 in a secure manner.
 
-\bibliography{zerodb}
+{\footnotesize \bibliographystyle{acm}
+\bibliography{zerodb}}
 
 \end{document}
 
