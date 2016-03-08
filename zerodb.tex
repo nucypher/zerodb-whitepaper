@@ -299,8 +299,8 @@ Sharing an entire dataset is done as follows.
 Suppose user $A$ owns the dataset and wants to share it with user $B$.
 In the case of proxy re-encryption algorithms~\cite{afgh,libert2011unidirectional}, user $A$ has a key pair, $priv_a/pub_a$, and user $B$ has a key pair, $priv_b/pub_b$.
 All objects and index buckets are encrypted with random, distinct content-encryption keys, $cek_i$, using a block cipher algorithm.
-The $cek$ is encrypted with a key encrypting key, $priv_a$.
-So, we store $e_a(cek_i) = \mbox{encrypt}(priv_a, cek_i)$ and $c_i(obj) = \mbox{encrypt}(cek_i, data)$.
+The $cek$ is encrypted with a key encrypting public key, $pub_a$.
+So, we store $e_a(cek_i) = \mbox{encrypt}(pub_a, cek_i)$ and $c_i(obj) = \mbox{encrypt}(cek_i, data)$.
 
 When user $A$ wants to give user $B$ access to the entire dataset and indexes, he constructs a re-encryption key, $r_{ab}$, such that
 the server can transform the content-encryption key as $e_b(cek_i) = \mbox{transform}(r_{ab}, e_a(cek_i))$.
